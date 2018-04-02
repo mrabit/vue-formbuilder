@@ -7,17 +7,19 @@ import { textConf } from "./Text";
 import { titleConf } from "./Title";
 import { hrConf } from "./Hr";
 import { pConf } from "./P";
+import { uploadsConf } from './Uploads';
 
 const formList = {
+  Title: titleConf,
+  Hr: hrConf,
+  P: pConf,
   Input: inputConf,
   Select: selectConf,
   Radio: radioConf,
   CheckBox: checkBoxConf,
   Cascader: cascaderConf,
+  Uploads: uploadsConf,
   Text: textConf,
-  Title: titleConf,
-  Hr: hrConf,
-  P: pConf,
 };
 let list_arr = [];
 for (let i in formList) {

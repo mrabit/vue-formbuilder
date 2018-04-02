@@ -20,19 +20,27 @@
         </draggable>
       </Form>
       </Col>
-      <Modal @on-ok="handleOk" @on-cancel="handleCancel" v-model="showModal" :title="'配置' + modalFormData.label + '属性'" :mask-closable="false">
+      <Modal @on-ok="handleOk" @on-cancel="handleCancel" v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false">
         <Form :label-width="80" :model="modalFormData" ref="modalFormData">
           <FormItem label="控件名称：" v-if="typeof modalFormData.label != 'undefined'">
-            <Input v-model="modalFormData.label" placeholder="请输入控件名称："></Input>
-          </FormItem>
-          <FormItem label="文本：" v-if="typeof modalFormData.Text != 'undefined'">
-            <Input v-model="modalFormData.Text" placeholder="请输入文本："></Input>
+            <Input v-model="modalFormData.label" placeholder="请输入控件名称"></Input>
           </FormItem>
           <FormItem label="placeholder：" v-if="typeof modalFormData.placeholder != 'undefined'">
-            <Input v-model="modalFormData.placeholder" placeholder="请输入placeholder："></Input>
+            <Input v-model="modalFormData.placeholder" placeholder="请输入placeholder"></Input>
+          </FormItem>
+          <FormItem label="上传地址：" v-if="typeof modalFormData.action != 'undefined'">
+            <Input v-model="modalFormData.action" placeholder="请输入上传地址"></Input>
+          </FormItem>
+          <FormItem label="最大限制：" v-if="typeof modalFormData.maxSize != 'undefined'">
+            <Input v-model="modalFormData.maxSize" placeholder="请输入上传文件最大限制">
+            <span slot="append">kb</span>
+            </Input>
           </FormItem>
           <FormItem label="是否必填：" v-if="typeof modalFormData.require != 'undefined'">
             <Checkbox v-model="modalFormData.require">必填</Checkbox>
+          </FormItem>
+          <FormItem label="是否多选：" v-if="typeof modalFormData.multiple != 'undefined'">
+            <Checkbox v-model="modalFormData.multiple">多选</Checkbox>
           </FormItem>
           <FormItem label="行内元素：" v-if="typeof modalFormData.inlineBlock != 'undefined'">
             <Checkbox v-model="modalFormData.inlineBlock">是</Checkbox>
@@ -44,7 +52,7 @@
             <InputNumber :max="6" :min="1" v-model="modalFormData.level"></InputNumber>
           </FormItem>
           <FormItem label="字体颜色：" v-if="typeof modalFormData.color != 'undefined'">
-            <ColorPicker format="rgb" v-model="modalFormData.color" />
+            <ColorPicker v-model="modalFormData.color" />
           </FormItem>
         </Form>
       </Modal>
@@ -70,18 +78,22 @@ export default {
   },
   data() {
     return {
-      color: '#000',
       list: formList,
       list2: [],
       showModal: false,
       // 深拷贝对象，防止默认空对象被更改
-      modalFormData: {}
+      // 颜色选择器bug，对象下color不更新      
+      modalFormData: {
+        color: ''
+      }
     };
   },
   methods: {
     // https://github.com/SortableJS/Vue.Draggable#clone
     // 克隆,深拷贝对象
     cloneData(original) {
+      // 添加一个modal标题
+      original.obj.modalTitle = original.obj.label || "";
       // 深拷贝对象，防止默认空对象被更改
       return Object.assign({}, original);
     },
@@ -96,7 +108,12 @@ export default {
     },
     // modal点击取消执行事件，清空当前modal内容
     handleCancel() {
-      this.modalFormData = {};
+      setTimeout(_ => {
+        this.modalFormData = {
+          color: ''
+        };
+        // this.modalColor = "";
+      }, 500)
     },
     // 显示modal,配置被克隆控件
     confEle(index) {
@@ -104,6 +121,9 @@ export default {
       for (let i in list_temp.obj) {
         this.modalFormData[i] = list_temp.obj[i];
       }
+      // 配置项中未找到color，删除modalFormData中自带color属性
+      if (!list_temp.obj['color']) delete this.modalFormData.color;
+      // 设置被配置控件的index，便于完成配置找到相应对象赋值
       this.modalFormData.listIndex = index;
       this.showModal = true;
     },

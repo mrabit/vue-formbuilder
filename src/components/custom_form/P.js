@@ -14,7 +14,6 @@ export default (_self, h) => {
 
 export const pConf = {
   config: true,
-  color: '',
   label: '文本标签',
   color: '#000'
 }

@@ -7,6 +7,7 @@ import Cascader from './Cascader';
 import Title from './Title';
 import Hr from './Hr';
 import P from './P';
+import Uploads from './Uploads';
 const form_item = {
   Input,
   CheckBox,
@@ -16,16 +17,17 @@ const form_item = {
   Cascader,
   Title,
   Hr,
-  P
+  P,
+  Uploads
 };
 
 export default {
   render(h) {
     var $this = this;
-    const arr = (form_item[this.type] && form_item[this.type](this, h)) || [];
+    const arr = (form_item[$this.type] && form_item[$this.type]($this, h)) || [];
     let icons = [];
     // 配置按钮
-    if (!!this.obj.config) {
+    if (!!$this.obj.config) {
       icons.push(h('Icon', {
         props: {
           type: 'gear-a',
@@ -57,6 +59,11 @@ export default {
     if (['Title', 'Hr', 'P'].indexOf((this.type)) < 0) {
       return h(
         "FormItem", {
+          // nativeOn: {
+          //   "!click" (event) {
+          //     event.stopPropagation()
+          //   }
+          // },
           class: {
             items: true
           },
