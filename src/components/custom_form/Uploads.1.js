@@ -1,17 +1,11 @@
 export default (_self, h) => {
   return [
-    h('uploadCustom', {
+    h('Upload', {
       props: {
         multiple: _self.obj.multiple || false,
-        type: 'drag', //支持拖拽
+        type: 'drag',
         action: _self.obj.action || "",
-        'max-size': _self.obj.maxSize || 2048,
-        defaultList: _self.obj.defaultList
-      },
-      on: {
-        handleUploadsValue(arr) {
-          _self.$emit('handleChangeVal', arr)
-        }
+        'max-size': _self.obj.maxSize || 1024
       }
     }, [
       h('div', {
@@ -40,6 +34,6 @@ export const uploadsConf = {
   action: 'action',
   require: true,
   label: '上传控件',
-  maxSize: 2048,
-  defaultList: []
+  multiple: false,
+  maxSize: 1024
 }

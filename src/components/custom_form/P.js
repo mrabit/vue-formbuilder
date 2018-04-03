@@ -2,7 +2,8 @@ export default (_self, h) => {
   return [
     h('p', {
       style: {
-        'margin-bottom': '24px',
+        'margin-bottom': _self.obj.marginBottom + 'px',
+        'margin-top': _self.obj.marginTop + 'px',
         'color': _self.obj.color || "#000"
       },
       domProps: {
@@ -15,5 +16,7 @@ export default (_self, h) => {
 export const pConf = {
   config: true,
   label: '文本标签',
-  color: '#000'
+  color: '#000',
+  marginTop: 0,
+  marginBottom: 24
 }

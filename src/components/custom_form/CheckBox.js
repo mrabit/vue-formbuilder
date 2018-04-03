@@ -1,12 +1,19 @@
 export default (_self, h) => {
   return [
-    h("CheckboxGroup", [
+    h("CheckboxGroup", {
+      props: {
+        value: _self.obj.value || []
+      },
+      on: {
+        'on-change' (arr) {
+          _self.obj.value = arr;
+          _self.$emit('handleChangeVal', arr)
+        }
+      }
+    }, [
       h("Checkbox", {
         props: {
           label: "复选框1"
-        },
-        attrs: {
-          checked: true
         }
       }),
       h("Checkbox", {
@@ -26,4 +33,5 @@ export let checkBoxConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
+  value: []
 }

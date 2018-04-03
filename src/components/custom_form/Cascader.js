@@ -18,7 +18,14 @@ export default (_self, h) => {
     h("Cascader", {
       props: {
         placeholder: _self.obj.placeholder || "这是一个级联选择器",
-        data: temp_data(3, 0, '数据')
+        data: temp_data(3, 0, '数据'),
+        multiple: _self.obj.multiple || false,
+        separate: _self.obj.multiple ? "，" : "/"
+      },
+      on: {
+        handleCascaderValue(arr) {
+          _self.$emit('handleChangeVal', arr)
+        }
       }
     })
   ];
@@ -33,4 +40,5 @@ export let cascaderConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
+  multiple: false
 }

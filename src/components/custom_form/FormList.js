@@ -19,7 +19,7 @@ const formList = {
   CheckBox: checkBoxConf,
   Cascader: cascaderConf,
   Uploads: uploadsConf,
-  Text: textConf,
+  Text: textConf
 };
 let list_arr = [];
 for (let i in formList) {

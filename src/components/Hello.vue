@@ -11,10 +11,10 @@
       </Form>
       </Col>
       <Col span="12" class="sortable_item">
-      <Form :label-width="80">
+      <Form :label-width="80" :modal="formData">
         <draggable element="span" :list="list2" :options="dragOptions2">
           <transition-group class="list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :type="element.type" :index="index" :obj="element.obj || {}">
+            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :type="element.type" :index="index" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => changeVal(val,element)">
             </renders>
           </transition-group>
         </draggable>
@@ -31,10 +31,21 @@
           <FormItem label="上传地址：" v-if="typeof modalFormData.action != 'undefined'">
             <Input v-model="modalFormData.action" placeholder="请输入上传地址"></Input>
           </FormItem>
-          <FormItem label="最大限制：" v-if="typeof modalFormData.maxSize != 'undefined'">
-            <Input v-model="modalFormData.maxSize" placeholder="请输入上传文件最大限制">
-            <span slot="append">kb</span>
+          <FormItem label="最大长度：" v-if="typeof modalFormData.maxLength != 'undefined'">
+            <Input v-model="modalFormData.maxLength" placeholder="请输入文本限制最大长度">
             </Input>
+          </FormItem>
+          <FormItem label="最大限制：" v-if="typeof modalFormData.maxSize != 'undefined'">
+            <InputNumber :formatter="value => `${value}kb`" :parser="value => value.replace('kb', '')" v-model="modalFormData.maxSize" placeholder="请输入上传文件最大限制">
+            </InputNumber>
+          </FormItem>
+          <FormItem label="上边距：" v-if="typeof modalFormData.marginTop != 'undefined'">
+            <InputNumber :formatter="value => `${value}px`" :parser="value => value.replace('px', '')" v-model="modalFormData.marginTop" placeholder="请输入标签上边距">
+            </InputNumber>
+          </FormItem>
+          <FormItem label="下边距：" v-if="typeof modalFormData.marginBottom != 'undefined'">
+            <InputNumber :formatter="value => `${value}px`" :parser="value => value.replace('px', '')" v-model="modalFormData.marginBottom" placeholder="请输入标签下边距">
+            </InputNumber>
           </FormItem>
           <FormItem label="是否必填：" v-if="typeof modalFormData.require != 'undefined'">
             <Checkbox v-model="modalFormData.require">必填</Checkbox>
@@ -63,7 +74,6 @@
 import draggable from "vuedraggable";
 import renders from "./custom_form/Render";
 import formList from "./custom_form/FormList";
-
 // const modalFormData_default = {
 //   label: '',
 //   listIndex: 0,
@@ -85,17 +95,24 @@ export default {
       // 颜色选择器bug，对象下color不更新      
       modalFormData: {
         color: ''
+      },
+      formData: {
+        name: '一桶浆糊'
       }
     };
   },
   methods: {
+    changeVal(val, element) {
+      this.formData[element.obj.name] = val;
+    },
     // https://github.com/SortableJS/Vue.Draggable#clone
     // 克隆,深拷贝对象
     cloneData(original) {
       // 添加一个modal标题
       original.obj.modalTitle = original.obj.label || "";
       // 深拷贝对象，防止默认空对象被更改
-      return Object.assign({}, original);
+      // return Object.assign({}, original);
+      return JSON.parse(JSON.stringify(original));
     },
     // modal点击确定执行事件
     handleOk() {

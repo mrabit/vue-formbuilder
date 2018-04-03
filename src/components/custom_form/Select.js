@@ -4,6 +4,11 @@ export default (_self, h) => {
       "Select", {
         props: {
           placeholder: _self.obj.placeholder || "这是一个下拉选项框"
+        },
+        on: {
+          'on-change' (value) {
+            _self.$emit('handleChangeVal', value)
+          }
         }
       },
       Array.apply(null, {
@@ -13,8 +18,9 @@ export default (_self, h) => {
         return h(
           "Option", {
             props: {
-              value: "选项" + (v + 1)
-            }
+              value: v + 1
+            },
+
           },
           "选项" + (v + 1)
         );

@@ -46,6 +46,7 @@ export default {
       },
       nativeOn: {
         click() {
+          debugger;
           $this.$emit('handleRemoveEle', $this.index);
         }
       }
@@ -105,6 +106,12 @@ export default {
       type: Object,
       default () {
         return {};
+      }
+    },
+    data: {
+      type: Object,
+      default () {
+        return {}
       }
     }
   }

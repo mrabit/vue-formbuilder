@@ -5,9 +5,12 @@ import App from './App'
 import router from './router'
 import iview from 'iview';
 import 'iview/dist/styles/iview.css'
+import cascaderSelect from './components/cascader-multi';
+import uploadCustom from './components/Uploads';
 
 Vue.config.productionTip = false
 Vue.use(iview);
+Vue.use(uploadCustom);
 
 /* eslint-disable no-new */
 new Vue({
