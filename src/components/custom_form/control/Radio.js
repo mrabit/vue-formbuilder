@@ -6,10 +6,12 @@ export default (_self, h) => {
       },
       on: {
         'on-change' (value) {
-          console.log(value);
+          if (!_self.obj.name) {
+            return false;
+          }
           _self.obj = Object.assign(_self.obj, {
             value
-          })
+          });
           _self.$emit('handleChangeVal', value)
         }
       }
@@ -29,6 +31,7 @@ export default (_self, h) => {
 };
 
 export let radioConf = {
+  type: 'radio',
   // 是否可配置
   config: true,
   // 控件左侧label内容
@@ -36,5 +39,6 @@ export let radioConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
-  value: ''
+  value: '',
+  name: ''
 }

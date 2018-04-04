@@ -7,6 +7,9 @@ export default (_self, h) => {
         },
         on: {
           'on-change' (value) {
+            if (!_self.obj.name) {
+              return false;
+            }
             _self.$emit('handleChangeVal', value)
           }
         }
@@ -30,6 +33,7 @@ export default (_self, h) => {
 };
 
 export let selectConf = {
+  type: 'select',
   // 是否可配置
   config: true,
   // 控件左侧label内容
@@ -38,4 +42,5 @@ export let selectConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
+  name: ''
 }

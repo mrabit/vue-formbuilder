@@ -6,6 +6,9 @@ export default (_self, h) => {
       },
       on: {
         'on-change' (arr) {
+          if (!_self.obj.name) {
+            return false;
+          }
           _self.obj.value = arr;
           _self.$emit('handleChangeVal', arr)
         }
@@ -26,6 +29,7 @@ export default (_self, h) => {
 };
 
 export let checkBoxConf = {
+  type: 'checkbox',
   // 是否可配置
   config: true,
   // 控件左侧label内容
@@ -33,5 +37,6 @@ export let checkBoxConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
-  value: []
+  value: [],
+  name: ''
 }

@@ -1,13 +1,14 @@
-import Input from './Input';
-import CheckBox from './CheckBox';
-import Radio from './Radio';
-import Select from './Select';
-import Text from './Text';
-import Cascader from './Cascader';
-import Title from './Title';
-import Hr from './Hr';
-import P from './P';
-import Uploads from './Uploads';
+import ItemIcon from './ItemIcon';
+import Input from './control/Input';
+import CheckBox from './control/CheckBox';
+import Radio from './control/Radio';
+import Select from './control/Select';
+import Text from './control/Text';
+import Cascader from './control/Cascader';
+import Title from './control/Title';
+import Hr from './control/Hr';
+import P from './control/P';
+import Uploads from './control/Uploads';
 const form_item = {
   Input,
   CheckBox,
@@ -25,57 +26,32 @@ export default {
   render(h) {
     var $this = this;
     const arr = (form_item[$this.type] && form_item[$this.type]($this, h)) || [];
-    let icons = [];
-    // 配置按钮
-    if (!!$this.obj.config) {
-      icons.push(h('Icon', {
-        props: {
-          type: 'gear-a',
-        },
-        nativeOn: {
-          click() {
-            $this.$emit('handleConfEle', $this.index);
-          }
-        }
-      }));
-    }
-    // 删除按钮
-    icons.push(h('Icon', {
-      props: {
-        type: 'minus-round'
-      },
-      nativeOn: {
-        click() {
-          debugger;
-          $this.$emit('handleRemoveEle', $this.index);
-        }
-      }
-    }));
-    const item_icon = h('div', {
-      class: {
-        'item-icon': true
-      }
-    }, icons);
+    const item_icon = ItemIcon($this, h);
 
     if (['Title', 'Hr', 'P'].indexOf((this.type)) < 0) {
-      return h(
-        "FormItem", {
-          // nativeOn: {
-          //   "!click" (event) {
-          //     event.stopPropagation()
-          //   }
-          // },
-          class: {
-            items: true
-          },
-          props: {
-            label: (this.obj.label || this.type) + '：'
-          },
-          style: {
-            display: this.obj.inlineBlock ? 'inline-block' : 'block',
-            width: this.obj.inlineBlock ? '33%' : 'auto',
-          }
+      let FormItem = {
+        class: {
+          items: true
         },
+        props: {
+          label: (this.obj.label || this.type) + '：',
+          // required: !!this.obj.name && !!this.obj.require,
+          // error: "该项为必填项",
+          prop: this.obj.name || 'temp'
+        },
+        style: {
+          display: this.obj.inlineBlock ? 'inline-block' : 'block',
+          width: this.obj.inlineBlock ? '33%' : 'auto',
+        }
+      };
+
+      // if (!!this.obj.name && !!this.obj.require) {
+      // FormItem.props['prop'] = this.obj.name;
+      // FormItem.props['rules'] = { required: true, message: 'Item ' + ' can not be empty', trigger: 'blur' };
+      // }
+      console.log(FormItem)
+      return h(
+        "FormItem", FormItem,
         arr.concat(item_icon)
       );
     } else {

@@ -13,10 +13,7 @@ export default (_self, h) => {
       on: {
         "on-change" (event) {
           if (!_self.obj.name) {
-            _self.$Notice.warning({
-              title: '请选择该控件绑定的字段',
-              desc: '该控件尚未绑定字段，请选择绑定.'
-            });
+            return false;
           }
           _self.obj.value = event.currentTarget.value;
           _self.$emit('handleChangeVal', event.currentTarget.value)
@@ -27,6 +24,7 @@ export default (_self, h) => {
 };
 
 export let textConf = {
+  type: 'textarea',
   // 是否可配置
   config: true,
   // 控件左侧label内容
@@ -38,5 +36,6 @@ export let textConf = {
   require: true,
   // 文本域行高 
   maxRows: 5,
-  value: ""
+  value: "",
+  name: ''
 }

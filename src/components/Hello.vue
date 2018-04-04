@@ -11,7 +11,7 @@
       </Form>
       </Col>
       <Col span="12" class="sortable_item">
-      <Form :label-width="80" :modal="formData">
+      <Form :label-width="80" :modal="formData" :rules="ruleValidate">
         <draggable element="span" :list="list2" :options="dragOptions2">
           <transition-group class="list-group" type="transition" :name="'flip-list'" tag="div">
             <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :type="element.type" :index="index" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => changeVal(val,element)">
@@ -20,10 +20,18 @@
         </draggable>
       </Form>
       </Col>
-      <Modal @on-ok="handleOk" @on-cancel="handleCancel" v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false">
-        <Form :label-width="80" :model="modalFormData" ref="modalFormData">
+      <Modal v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false">
+        <Form class="form_content" :label-width="80" :model="modalFormData" ref="modalFormData">
           <FormItem label="控件名称：" v-if="typeof modalFormData.label != 'undefined'">
             <Input v-model="modalFormData.label" placeholder="请输入控件名称"></Input>
+          </FormItem>
+          <FormItem label="数据字典：" v-if="showModal">
+            <Select v-model="modalFormData.dict" filterable @on-change="handleDataDictChange">
+              <Option :disabled="dataDictSelected.indexOf(item.id) >= 0" v-for="item in dataDictList" :value="item.id" :key="item.id">{{ item.label }}</Option>
+            </Select>
+          </FormItem>
+          <FormItem label="name属性：" v-if="typeof modalFormData.name != 'undefined'">
+            <Input v-model="modalFormData.name" placeholder="" disabled></Input>
           </FormItem>
           <FormItem label="placeholder：" v-if="typeof modalFormData.placeholder != 'undefined'">
             <Input v-model="modalFormData.placeholder" placeholder="请输入placeholder"></Input>
@@ -66,6 +74,10 @@
             <ColorPicker v-model="modalFormData.color" />
           </FormItem>
         </Form>
+        <div slot="footer">
+          <Button type="text" @click="handleCancel">取消</Button>
+          <Button type="primary" :loading="modalFormData.loading" @click="handleOk">确定</Button>
+        </div>
       </Modal>
     </Row>
   </div>
@@ -94,14 +106,23 @@ export default {
       // 深拷贝对象，防止默认空对象被更改
       // 颜色选择器bug，对象下color不更新      
       modalFormData: {
-        color: ''
+        color: '',
+        loading: false
       },
-      formData: {
-        name: '一桶浆糊'
-      }
+      formData: {},
+      dataDict: []
     };
   },
   methods: {
+    handleDataDictChange(val) {
+      this.$set(this.modalFormData, 'loading', true);
+      this.$http.get(`/label/${val}`).then(d => {
+        this.modalFormData = Object.assign({}, this.modalFormData, {
+          name: d.data.name,
+          loading: false
+        });
+      });
+    },
     changeVal(val, element) {
       this.formData[element.obj.name] = val;
     },
@@ -125,11 +146,12 @@ export default {
     },
     // modal点击取消执行事件，清空当前modal内容
     handleCancel() {
+      this.showModal = false;
       setTimeout(_ => {
         this.modalFormData = {
-          color: ''
+          color: '',
+          loading: false
         };
-        // this.modalColor = "";
       }, 500)
     },
     // 显示modal,配置被克隆控件
@@ -142,6 +164,8 @@ export default {
       if (!list_temp.obj['color']) delete this.modalFormData.color;
       // 设置被配置控件的index，便于完成配置找到相应对象赋值
       this.modalFormData.listIndex = index;
+      // Vue 不能检测到对象属性的添加或删除
+      this.modalFormData = Object.assign({}, this.modalFormData);
       this.showModal = true;
     },
     // 删除克隆控件
@@ -150,6 +174,44 @@ export default {
     }
   },
   computed: {
+    ruleValidate() {
+      const rule_arr = this.list2.filter(v => {
+        return v.obj.name && v.obj.require
+      });
+      const validatePass = (rule, value, callback) => {
+        debugger;
+        if (value === '') {
+          callback(new Error('Please enter your password'));
+        } else {
+
+          callback();
+        }
+      };
+      let rule_temp = {
+        temp: [{
+          required: true,
+          message: '该项为必填项',
+          trigger: 'blur'
+        }]
+      };
+      for (let i in rule_arr) {
+        rule_temp[rule_arr[i]['obj']['name']] = [{
+          validator: validatePass,
+          trigger: 'blur'
+        }]
+      }
+      return rule_temp;
+    },
+    dataDictSelected() {
+      return this.list2.map(v => {
+        return v.obj.dict || -1;
+      })
+    },
+    dataDictList() {
+      return this.dataDict.filter(v => {
+        return v.type == this.modalFormData.type;
+      })
+    },
     dragOptions1() {
       return {
         animation: 0,
@@ -174,6 +236,11 @@ export default {
         }
       };
     }
+  },
+  created() {
+    this.$http.get('/label').then(d => {
+      this.dataDict = d.data.items;
+    })
   }
 };
 
@@ -226,6 +293,10 @@ export default {
   transition: inherit;
   opacity: 1;
   max-height: 50px;
+}
+
+.form_content .ivu-form-item:last-child {
+  margin-bottom: 0;
 }
 
 </style>

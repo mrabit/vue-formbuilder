@@ -7,6 +7,9 @@ export default (_self, h) => {
       },
       on: {
         "on-change": function(val) {
+          if (!_self.obj.name) {
+            return false;
+          }
           _self.$emit('handleChangeVal', val.currentTarget.value)
         }
       }
@@ -16,6 +19,7 @@ export default (_self, h) => {
 
 
 export let inputConf = {
+  type: 'input',
   // 是否可配置
   config: true,
   // 控件左侧label内容
@@ -24,5 +28,6 @@ export let inputConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
-  maxLength: 20
+  maxLength: 20,
+  name: ''
 }
