@@ -11,7 +11,7 @@
       </Form>
       </Col>
       <Col span="12" class="sortable_item">
-      <Form :label-width="80" :modal="formData" :rules="ruleValidate">
+      <Form :label-width="80" :model="formData" :rules="ruleValidate">
         <draggable element="span" :list="list2" :options="dragOptions2">
           <transition-group class="list-group" type="transition" :name="'flip-list'" tag="div">
             <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :type="element.type" :index="index" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => changeVal(val,element)">
@@ -179,18 +179,15 @@ export default {
         return v.obj.name && v.obj.require
       });
       const validatePass = (rule, value, callback) => {
-        debugger;
         if (value === '') {
-          callback(new Error('Please enter your password'));
+          callback(new Error('该项为必填项'));
         } else {
-
           callback();
         }
       };
       let rule_temp = {
         temp: [{
-          required: true,
-          message: '该项为必填项',
+          validator: validatePass,
           trigger: 'blur'
         }]
       };

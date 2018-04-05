@@ -29,5 +29,6 @@ export let inputConf = {
   inlineBlock: false,
   require: true,
   maxLength: 20,
-  name: ''
+  name: '',
+  value: ''
 }
