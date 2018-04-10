@@ -15,15 +15,16 @@ const temp_data = (size, parentIndex, parentName) => {
 
 export default (_self, h) => {
   return [
-    h("Cascader", {
+    h("ICascader", {
       props: {
         placeholder: _self.obj.placeholder || "这是一个级联选择器",
         data: temp_data(3, 0, '数据'),
         multiple: _self.obj.multiple || false,
-        separate: _self.obj.multiple ? "，" : "/"
+        separate: _self.obj.multiple ? "，" : "/",
+        filterable: true
       },
       on: {
-        handleCascaderValue(arr) {
+        "on-change" (arr) {
           if (!_self.obj.name) {
             return false;
           }
@@ -44,6 +45,8 @@ export let cascaderConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
-  multiple: false,
-  name: ''
+  multiple: true,
+  name: '',
+  value: [],
+  ruleError: '请选项不能为空'
 }

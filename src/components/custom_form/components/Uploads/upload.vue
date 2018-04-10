@@ -1,30 +1,37 @@
 <template>
   <div>
-    <div class="demo-upload-list" v-for="(item,index) in uploadList" :key="index">
-      <template v-if="item.status === 'finished'">
-        <img :src="item.url">
-        <div class="demo-upload-list-cover">
-          <Icon type="ios-eye-outline" @click.native="handleView(item,index)"></Icon>
-          <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-        </div>
-      </template>
-      <template v-else>
-        <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-      </template>
-    </div>
-    <Upload ref="upload" :show-upload-list="false" :default-file-list="defaultList" :on-success="handleSuccess" :format="['jpg','jpeg','png']" :max-size="maxSize" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" multiple :type="type" action="action" style="display: inline-block;width:58px;">
-      <div style="width: 58px;height:58px;line-height: 58px;">
-        <Icon type="camera" size="20"></Icon>
+    <Upload ref="upload" :show-upload-list="false" :default-file-list="defaultList" :on-success="handleSuccess" :format="['jpg','jpeg','png']" :max-size="maxSize" :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" multiple :type="type" :action="action" :name="name">
+      <div style="padding: 20px 0">
+        <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+        <p>点击或者拖拽文件到此处进行上传</p>
       </div>
     </Upload>
-    <Modal title="图片属性设定" v-model="visible" @on-ok="handleCloseModal">
-      <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
+    <ul class="demo-upload-list">
+      <li v-for="(item,index) in uploadList" :key="index">
+        <template v-if="item.status == 'finished'">
+          <p style="display: inline-block">
+            <a v-if="!item.visible" :href="item.url" target="_blank">{{item.name}}{{item.name == item.file_name?"":'('+item.file_name+')'}}</a>
+            <Input @on-enter="handleChangeAlias" autofocus placeholder="请设置附件别名" v-else v-model="formData.file_name" style="width: 300px"></Input>
+          </p>
+          <p style="float:right">
+            <template v-if="!item.visible">
+              <span @click="handleAlias(item, index)" class="alias-btn">别名</span>
+              <span @click="handleRemove(item)">删除</span>
+            </template>
+            <span v-else @click="handleChangeAlias">确定</span>
+          </p>
+        </template>
+        <Progress v-else :percent="item.percentage" hide-info></Progress>
+      </li>
+    </ul>
+    <!-- <Modal title="图片属性设定" v-model="visible" @on-ok="handleCloseModal">
+      <img :src="image_url" v-if="visible" style="width: 100%">
       <Form :model="formData" :label-width="80" style="margin-top: 24px;">
         <FormItem label="附件别名：">
           <Input v-model="formData.file_name" placeholder="请输入附件别名"></Input>
         </FormItem>
       </Form>
-    </Modal>
+    </Modal> -->
   </div>
 </template>
 <script>
@@ -34,34 +41,43 @@ export default {
     return {
       formData: {
         file_name: "",
-        index: 0
+        index: -1
       },
       imgName: "",
       visible: false,
-      uploadList: []
+      uploadList: [{}]
     };
   },
   methods: {
-    handleCloseModal() {
+    handleChangeAlias() {
       this.uploadList[this.formData.index]['file_name'] = this.formData.file_name;
+      this.uploadList[this.formData.index]['visible'] = false;
       this.$emit('handleUploadsValue', this.uploadList);
+      this.formData = {
+        file_name: "",
+        index: -1
+      };
     },
-    handleView(item, index) {
+    handleAlias(item, index) {
+      // 有上传操作未完成的
+      if (this.formData.index != -1) {
+        this.$set(this.uploadList[this.formData.index], 'visible', false);
+      }
       this.formData = Object.assign({}, this.formData, {
         file_name: item.file_name || "",
-        index
+        index,
       });
-      this.imgName = item.name;
-      this.visible = true;
+      this.$set(this.uploadList[index], 'visible', true);
     },
     handleRemove(file) {
       const fileList = this.$refs.upload.fileList;
       this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
     },
     handleSuccess(res, file) {
-      file.url =
-        "https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar";
-      file.name = "7eb99afb9d5f317c912f08b5212fd69a";
+      file.url = res.data.image_url;
+      file.name = res.data.name;
+      file.file_name = res.data.name;
+      this.$emit('handleUploadsValue', this.uploadList);
     },
     handleFormatError(file) {
       this.$Notice.warning({
@@ -108,6 +124,10 @@ export default {
     type: { //支持拖拽
       type: String,
       default: 'select'
+    },
+    name: {
+      type: String,
+      default: 'photo'
     }
   }
 };
@@ -115,44 +135,37 @@ export default {
 </script>
 <style>
 .demo-upload-list {
-  display: inline-block;
-  width: 60px;
-  height: 60px;
-  text-align: center;
-  line-height: 60px;
-  border: 1px solid transparent;
+  margin-top: 15px;
+  display: block;
+  line-height: 20px;
   border-radius: 4px;
   overflow: hidden;
   background: #fff;
   position: relative;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   margin-right: 4px;
 }
 
-.demo-upload-list img {
-  width: 100%;
-  height: 100%;
+.demo-upload-list .ivu-progress-bg {
+  height: 5px !important;
 }
 
-.demo-upload-list-cover {
-  display: none;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
+.demo-upload-list input {
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 0;
+  outline: 0;
+  border-bottom: 1px solid #ccc;
+  border-radius: 0;
+  line-height: 19px;
+  height: 18px;
 }
 
-.demo-upload-list:hover .demo-upload-list-cover {
-  display: block;
+.demo-upload-list input:focus {
+  box-shadow: inherit;
 }
 
-.demo-upload-list-cover i {
-  color: #fff;
-  font-size: 20px;
-  cursor: pointer;
-  margin: 0 2px;
+.alias-btn {
+  margin-right: 10px
 }
 
 </style>

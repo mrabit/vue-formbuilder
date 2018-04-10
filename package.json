@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "iview": "^2.11.0",
+    "iview": "^2.12.0",
+    "iview-area": "^1.5.17",
+    "moment": "^2.22.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuedraggable": "^2.16.0"

@@ -64,7 +64,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         to: config.dev.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: ['vendor'],
+      filename: 'common.js'
+    }) //第三方库打包生成的文件
   ]
 })
 

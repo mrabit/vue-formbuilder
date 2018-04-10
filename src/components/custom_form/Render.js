@@ -9,47 +9,63 @@ import Title from './control/Title';
 import Hr from './control/Hr';
 import P from './control/P';
 import Uploads from './control/Uploads';
+import DatePicker from './control/DatePicker';
+import Address from './control/Address';
+
+import trigger from './config/trigger';
+
 const form_item = {
-  Input,
-  CheckBox,
-  Radio,
-  Select,
-  Text,
-  Cascader,
   Title,
   Hr,
   P,
-  Uploads
+  Input,
+  Select,
+  Radio,
+  CheckBox,
+  DatePicker,
+  Cascader,
+  Address,
+  Uploads,
+  Text,
 };
+
+const display = (val) => {
+  if (typeof val === 'undefined') return 'block';
+  return val == 1 ? 'block' : 'none';
+}
 
 export default {
   render(h) {
     var $this = this;
-    const arr = (form_item[$this.type] && form_item[$this.type]($this, h)) || [];
-    const item_icon = ItemIcon($this, h);
-
-    if (['Title', 'Hr', 'P'].indexOf((this.type)) < 0) {
+    const arr = (form_item[this.ele] && form_item[this.ele](this, h)) || [];
+    const item_icon = ItemIcon(this, h);
+    if (['Title', 'Hr', 'P'].indexOf((this.ele)) < 0) {
       let FormItem = {
         class: {
-          items: true
+          'items': true,
+          'ivu-form-item-required': !!this.obj.name && !!this.obj.require
         },
         props: {
-          label: (this.obj.label || this.type) + '：',
-          // required: !!this.obj.name && !!this.obj.require,
-          // error: "该项为必填项",
-          prop: this.obj.name || 'temp'
+          label: (this.obj.label || this.ele) + '：',
+          prop: this.obj.name || 'temp',
+          rules: {
+            required: !!this.obj.name && !!this.obj.require,
+            message: this.obj.ruleError || '该字段不能为空',
+            trigger: trigger[this.obj.type],
+            validator: (rule, value, callback) => {
+              if (!!this.obj.name && !!this.obj.require && (value === '' || typeof value === 'undefined')) {
+                callback(new Error('该项为必填项'));
+              } else {
+                callback();
+              }
+            }
+          },
         },
         style: {
-          display: this.obj.inlineBlock ? 'inline-block' : 'block',
+          display: this.obj.inlineBlock ? 'inline-block' : display(this.data[this.obj.parent_name]),
           width: this.obj.inlineBlock ? '33%' : 'auto',
         }
       };
-
-      // if (!!this.obj.name && !!this.obj.require) {
-      // FormItem.props['prop'] = this.obj.name;
-      // FormItem.props['rules'] = { required: true, message: 'Item ' + ' can not be empty', trigger: 'blur' };
-      // }
-      console.log(FormItem)
       return h(
         "FormItem", FormItem,
         arr.concat(item_icon)
@@ -70,7 +86,7 @@ export default {
 
   },
   props: {
-    type: {
+    ele: {
       type: String,
       default: "Input"
     },

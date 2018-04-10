@@ -37,5 +37,6 @@ export let textConf = {
   // 文本域行高 
   maxRows: 5,
   value: "",
-  name: ''
+  name: '',
+  ruleError: '该字段不能为空'
 }

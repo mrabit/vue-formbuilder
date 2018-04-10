@@ -13,18 +13,13 @@ export default (_self, h) => {
           _self.$emit('handleChangeVal', arr)
         }
       }
-    }, [
-      h("Checkbox", {
+    }, _self.obj.items.map(v => {
+      return h("Checkbox", {
         props: {
-          label: "复选框1"
+          label: v.label_value
         }
-      }),
-      h("Checkbox", {
-        props: {
-          label: "复选框2"
-        }
-      })
-    ])
+      }, v.label_name)
+    }))
   ];
 };
 
@@ -38,5 +33,7 @@ export let checkBoxConf = {
   inlineBlock: false,
   require: true,
   value: [],
-  name: ''
+  items: [{ "label_value": "1", "label_name": "单选框1" }, { "label_value": "2", "label_name": "单选框2" }],
+  name: '',
+  ruleError: '该选项不能为空'
 }

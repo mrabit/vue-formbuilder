@@ -2,32 +2,37 @@
   <div class="container">
     <Row>
       <Col span="12" class="sortable_container">
-      <Form :label-width="80">
+      <Form :label-width="100">
         <draggable :clone="cloneData" element="span" :list="list" :options="dragOptions1">
           <transition-group class="list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders v-for="(element,index) in list" :key="index" :type="element.type" :obj="element.obj || {}"></renders>
+            <renders v-for="(element,index) in list" :key="index" :ele="element.ele" :obj="element.obj || {}"></renders>
           </transition-group>
         </draggable>
       </Form>
       </Col>
       <Col span="12" class="sortable_item">
-      <Form :label-width="80" :model="formData" :rules="ruleValidate">
+      <Form ref="formValidate" :label-width="100" :model="formData" @submit.native.prevent>
         <draggable element="span" :list="list2" :options="dragOptions2">
           <transition-group class="list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :type="element.type" :index="index" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => changeVal(val,element)">
+            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :ele="element.ele" :index="index" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => changeVal(val,element)">
             </renders>
           </transition-group>
         </draggable>
+        <FormItem>
+          <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
+          <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>
+        </FormItem>
       </Form>
       </Col>
       <Modal v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false">
         <Form class="form_content" :label-width="80" :model="modalFormData" ref="modalFormData">
           <FormItem label="控件名称：" v-if="typeof modalFormData.label != 'undefined'">
-            <Input v-model="modalFormData.label" placeholder="请输入控件名称"></Input>
+            <Input v-model="modalFormData.label" placeholder="请输入控件名称" :maxlength="4"></Input>
           </FormItem>
           <FormItem label="数据字典：" v-if="showModal">
             <Select v-model="modalFormData.dict" filterable @on-change="handleDataDictChange">
-              <Option :disabled="dataDictSelected.indexOf(item.id) >= 0" v-for="item in dataDictList" :value="item.id" :key="item.id">{{ item.label }}</Option>
+              <Option :disabled="dataDictSelected.indexOf(item.id) >= 0" v-for="item in dataDictList" :value="JSON.stringify({
+                id: item.id, parent_name: item.parent_name})" :key="item.id">{{ item.label }}</Option>
             </Select>
           </FormItem>
           <FormItem label="name属性：" v-if="typeof modalFormData.name != 'undefined'">
@@ -36,9 +41,9 @@
           <FormItem label="placeholder：" v-if="typeof modalFormData.placeholder != 'undefined'">
             <Input v-model="modalFormData.placeholder" placeholder="请输入placeholder"></Input>
           </FormItem>
-          <FormItem label="上传地址：" v-if="typeof modalFormData.action != 'undefined'">
+          <!-- <FormItem label="上传地址：" v-if="typeof modalFormData.action != 'undefined'">
             <Input v-model="modalFormData.action" placeholder="请输入上传地址"></Input>
-          </FormItem>
+          </FormItem> -->
           <FormItem label="最大长度：" v-if="typeof modalFormData.maxLength != 'undefined'">
             <Input v-model="modalFormData.maxLength" placeholder="请输入文本限制最大长度">
             </Input>
@@ -56,10 +61,13 @@
             </InputNumber>
           </FormItem>
           <FormItem label="是否必填：" v-if="typeof modalFormData.require != 'undefined'">
-            <Checkbox v-model="modalFormData.require">必填</Checkbox>
+            <Checkbox disabled v-model="modalFormData.require">必填</Checkbox>
+          </FormItem>
+          <FormItem label="校验错误：" v-if="typeof modalFormData.ruleError != 'undefined'">
+            <Input v-model="modalFormData.ruleError" placeholder="请输入校验错误提示"></Input>
           </FormItem>
           <FormItem label="是否多选：" v-if="typeof modalFormData.multiple != 'undefined'">
-            <Checkbox v-model="modalFormData.multiple">多选</Checkbox>
+            <Checkbox v-model="modalFormData.multiple">多选(地区选择多选无效)</Checkbox>
           </FormItem>
           <FormItem label="行内元素：" v-if="typeof modalFormData.inlineBlock != 'undefined'">
             <Checkbox v-model="modalFormData.inlineBlock">是</Checkbox>
@@ -114,17 +122,33 @@ export default {
     };
   },
   methods: {
+    handleSubmit(name) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          debugger;
+          this.$Message.success('Success!');
+        } else {
+          debugger;
+          this.$Message.error('Fail!');
+        }
+      })
+    },
+    // modal内数据字典选项发生改变触发事件
     handleDataDictChange(val) {
+      const obj = JSON.parse(val);
       this.$set(this.modalFormData, 'loading', true);
-      this.$http.get(`/label/${val}`).then(d => {
+      this.$http.get(`/label/${obj.id}`).then(d => {
         this.modalFormData = Object.assign({}, this.modalFormData, {
           name: d.data.name,
-          loading: false
+          loading: false,
+          items: d.data.items,
+          parent_name: obj.parent_name
         });
       });
     },
     changeVal(val, element) {
-      this.formData[element.obj.name] = val;
+      this.$set(this.formData, element.obj.name, val);
+      // this.formData[element.obj.name] = val;
     },
     // https://github.com/SortableJS/Vue.Draggable#clone
     // 克隆,深拷贝对象
@@ -179,7 +203,8 @@ export default {
         return v.obj.name && v.obj.require
       });
       const validatePass = (rule, value, callback) => {
-        if (value === '') {
+        // debugger;
+        if (value === '' || typeof value === 'undefined') {
           callback(new Error('该项为必填项'));
         } else {
           callback();
@@ -194,14 +219,15 @@ export default {
       for (let i in rule_arr) {
         rule_temp[rule_arr[i]['obj']['name']] = [{
           validator: validatePass,
-          trigger: 'blur'
+          trigger: 'change'
         }]
       }
       return rule_temp;
     },
     dataDictSelected() {
       return this.list2.map(v => {
-        return v.obj.dict || -1;
+        const obj = JSON.parse(v.obj.dict || '{}');
+        return obj.id || -1;
       })
     },
     dataDictList() {
@@ -243,6 +269,10 @@ export default {
 
 </script>
 <style>
+.inline {
+  display: inline-block;
+}
+
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;

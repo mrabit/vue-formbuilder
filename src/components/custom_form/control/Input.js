@@ -3,7 +3,8 @@ export default (_self, h) => {
     h("Input", {
       props: {
         placeholder: _self.obj.placeholder || "这是一个输入框",
-        maxlength: _self.obj.maxLength || 20
+        maxlength: _self.obj.maxLength || 20,
+        value: _self.obj.items.label_value || ""
       },
       on: {
         "on-change": function(val) {
@@ -29,6 +30,7 @@ export let inputConf = {
   inlineBlock: false,
   require: true,
   maxLength: 20,
+  items: [{ "label_value": null, "label_name": "" }],
   name: '',
-  value: ''
+  ruleError: '该字段不能为空'
 }

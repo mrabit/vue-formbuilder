@@ -2,7 +2,7 @@ export default (_self, h) => {
   return [
     h("RadioGroup", {
       props: {
-        value: _self.obj.value || "1"
+        value: _self.obj.value || "-1"
       },
       on: {
         'on-change' (value) {
@@ -15,18 +15,13 @@ export default (_self, h) => {
           _self.$emit('handleChangeVal', value)
         }
       }
-    }, [
-      h("Radio", {
+    }, _self.obj.items.map(v => {
+      return h("Radio", {
         props: {
-          label: "1"
+          label: v.label_value
         }
-      }, "单选框1"),
-      h("Radio", {
-        props: {
-          label: "2"
-        }
-      }, "单选框2")
-    ])
+      }, v.label_name)
+    }))
   ];
 };
 
@@ -40,5 +35,7 @@ export let radioConf = {
   inlineBlock: false,
   require: true,
   value: '',
-  name: ''
+  items: [{ "label_value": "1", "label_name": "单选框1" }, { "label_value": "2", "label_name": "单选框2" }],
+  name: '',
+  ruleError: '请选择'
 }

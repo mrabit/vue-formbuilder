@@ -14,18 +14,14 @@ export default (_self, h) => {
           }
         }
       },
-      Array.apply(null, {
-        length: 5
-      })
-      .map(function(k, v) {
+      _self.obj.items.map(v => {
         return h(
           "Option", {
             props: {
-              value: v + 1
+              value: v.label_value
             },
-
           },
-          "选项" + (v + 1)
+          v.label_name
         );
       })
     )
@@ -42,5 +38,13 @@ export let selectConf = {
   // 是否显示行内元素
   inlineBlock: false,
   require: true,
-  name: ''
+  items: Array.apply(null, { length: 5 })
+    .map((k, v) => {
+      return {
+        label_value: v + 1,
+        label_name: "选项" + (v + 1),
+      }
+    }),
+  name: '',
+  ruleError: '请选择'
 }
