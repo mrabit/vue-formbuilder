@@ -20,7 +20,6 @@ export default (_self, h) => {
     },
     nativeOn: {
       click() {
-        debugger;
         _self.$emit('handleRemoveEle', _self.index);
       }
     }

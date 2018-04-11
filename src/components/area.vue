@@ -4024,7 +4024,7 @@ var bianli = (id) => {
   return temp_area;
 }
 
-console.log(JSON.stringify(bianli('86')));
+// console.log(JSON.stringify(bianli('86')));
 export default {
 
 }

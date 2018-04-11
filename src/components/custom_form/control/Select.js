@@ -3,7 +3,8 @@ export default (_self, h) => {
     h(
       "Select", {
         props: {
-          placeholder: _self.obj.placeholder || "这是一个下拉选项框"
+          placeholder: _self.obj.placeholder || "这是一个下拉选项框",
+          value: _self.obj.value || ''
         },
         on: {
           'on-change' (value) {
@@ -18,7 +19,7 @@ export default (_self, h) => {
         return h(
           "Option", {
             props: {
-              value: v.label_value
+              value: "" + v.label_value
             },
           },
           v.label_name
@@ -29,6 +30,7 @@ export default (_self, h) => {
 };
 
 export let selectConf = {
+  // 对应数据库内类型
   type: 'select',
   // 是否可配置
   config: true,
@@ -37,7 +39,9 @@ export let selectConf = {
   placeholder: '',
   // 是否显示行内元素
   inlineBlock: false,
+  // 是否必填
   require: true,
+  // 选项内数据
   items: Array.apply(null, { length: 5 })
     .map((k, v) => {
       return {
@@ -45,6 +49,10 @@ export let selectConf = {
         label_name: "选项" + (v + 1),
       }
     }),
+  // 绑定的值
+  value: '',
+  // 表单name
   name: '',
+  // 验证错误提示信息
   ruleError: '请选择'
 }

@@ -22,6 +22,7 @@ export default (_self, h) => {
 
 
 export let datePickerConf = {
+  // 对应数据库内类型
   type: 'datepicker',
   // 是否可配置
   config: true,
@@ -30,9 +31,13 @@ export let datePickerConf = {
   placeholder: '请选择日期',
   // 是否显示行内元素
   inlineBlock: false,
+  // 是否必填
   require: true,
+  // 表单name
   name: '',
+  // 绑定的值
   value: moment()
     .format('YYYY-MM-DD'),
+    // 验证错误提示信息
   ruleError: '选项不能为空'
 }

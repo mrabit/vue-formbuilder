@@ -181,7 +181,7 @@ export default {
     // 搜索结果
     querySelections() {
       let selections = [];
-
+      if (!this.filterable) return selections;
       getSelections(this.data, null, null, selections);
       selections = selections.filter(item => {
         return item.label ? item.label.indexOf(this.query) > -1 : false;
@@ -248,12 +248,13 @@ export default {
       this.visible = true;
     },
     handleFormatData(data, parentId) {
-      return data.map((k, v) => {
-        k["parentId"] = parentId || 0;
-        if (k.children && k.children.length) {
-          k.children = this.handleFormatData(k.children, k.value);
+      return data.map((v, k) => {
+        // if (typeof v['parentId'] != 'undefined') return v;
+        v["parentId"] = parentId || 0;
+        if (v.children && v.children.length) {
+          v.children = this.handleFormatData(v.children, v.value);
         }
-        return k;
+        return v;
       });
     }
   },
@@ -268,7 +269,7 @@ export default {
     }
   },
   mounted() {
-    if(!this.value.length) return;
+    if (!this.value.length) return;
     getSelectItem(this.data, this.value, this.queryItem);
     this.selectedData(this.queryItem);
   }

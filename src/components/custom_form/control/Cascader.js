@@ -21,10 +21,11 @@ export default (_self, h) => {
         data: temp_data(3, 0, '数据'),
         multiple: _self.obj.multiple || false,
         separate: _self.obj.multiple ? "，" : "/",
-        filterable: true
+        filterable: true,
+        value: _self.obj.value || []
       },
       on: {
-        "on-change" (arr) {
+        "handleCascaderValue" (arr) {
           if (!_self.obj.name) {
             return false;
           }
@@ -36,6 +37,7 @@ export default (_self, h) => {
 };
 
 export let cascaderConf = {
+  // 对应数据库内类型
   type: 'cascader',
   // 是否可配置
   config: true,
@@ -44,9 +46,14 @@ export let cascaderConf = {
   placeholder: '',
   // 是否显示行内元素
   inlineBlock: false,
+  // 是否必填
   require: true,
-  multiple: true,
+  // 是否多选
+  multiple: false,
+  // 表单name
   name: '',
+  // 绑定的值
   value: [],
-  ruleError: '请选项不能为空'
+  // 验证错误提示信息
+  ruleError: '该选项不能为空'
 }

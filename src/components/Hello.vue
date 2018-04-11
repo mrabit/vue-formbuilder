@@ -2,19 +2,24 @@
   <div class="container">
     <Row>
       <Col span="12" class="sortable_container">
-      <Form :label-width="100">
-        <draggable :clone="cloneData" element="span" :list="list" :options="dragOptions1">
-          <transition-group class="list-group" type="transition" :name="'flip-list'" tag="div">
+      <Form :label-width="100" class="b-a">
+        <draggable :clone="cloneData" :list="list" :options="dragOptions1">
+          <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
             <renders v-for="(element,index) in list" :key="index" :ele="element.ele" :obj="element.obj || {}"></renders>
           </transition-group>
         </draggable>
       </Form>
       </Col>
       <Col span="12" class="sortable_item">
-      <Form ref="formValidate" :label-width="100" :model="formData" @submit.native.prevent>
-        <draggable element="span" :list="list2" :options="dragOptions2">
-          <transition-group class="list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :ele="element.ele" :index="index" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => changeVal(val,element)">
+      <Form ref="formValidate" class="b-a" :label-width="100" :model="formData" @submit.native.prevent>
+        <ul class="m-l-lg">
+          <li class="wrapper">
+            <p>未绑定数据字典控件无效</p>
+          </li>
+        </ul>
+        <draggable :list="list2" :options="dragOptions2">
+          <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
+            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :index="index" :ele="element.ele" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => handleChangeVal(val,element)" :config-icon="true">
             </renders>
           </transition-group>
         </draggable>
@@ -31,6 +36,7 @@
           </FormItem>
           <FormItem label="数据字典：" v-if="showModal">
             <Select v-model="modalFormData.dict" filterable @on-change="handleDataDictChange">
+              <!-- value绑定json字符串的原因是，需要用到parent_name，当handleDataDictChange触发，赋值到modalFormData -->
               <Option :disabled="dataDictSelected.indexOf(item.id) >= 0" v-for="item in dataDictList" :value="JSON.stringify({
                 id: item.id, parent_name: item.parent_name})" :key="item.id">{{ item.label }}</Option>
             </Select>
@@ -41,12 +47,9 @@
           <FormItem label="placeholder：" v-if="typeof modalFormData.placeholder != 'undefined'">
             <Input v-model="modalFormData.placeholder" placeholder="请输入placeholder"></Input>
           </FormItem>
-          <!-- <FormItem label="上传地址：" v-if="typeof modalFormData.action != 'undefined'">
-            <Input v-model="modalFormData.action" placeholder="请输入上传地址"></Input>
-          </FormItem> -->
           <FormItem label="最大长度：" v-if="typeof modalFormData.maxLength != 'undefined'">
-            <Input v-model="modalFormData.maxLength" placeholder="请输入文本限制最大长度">
-            </Input>
+            <InputNumber v-model="modalFormData.maxLength" placeholder="请输入文本限制最大长度">
+            </InputNumber>
           </FormItem>
           <FormItem label="最大限制：" v-if="typeof modalFormData.maxSize != 'undefined'">
             <InputNumber :formatter="value => `${value}kb`" :parser="value => value.replace('kb', '')" v-model="modalFormData.maxSize" placeholder="请输入上传文件最大限制">
@@ -66,8 +69,8 @@
           <FormItem label="校验错误：" v-if="typeof modalFormData.ruleError != 'undefined'">
             <Input v-model="modalFormData.ruleError" placeholder="请输入校验错误提示"></Input>
           </FormItem>
-          <FormItem label="是否多选：" v-if="typeof modalFormData.multiple != 'undefined'">
-            <Checkbox v-model="modalFormData.multiple">多选(地区选择多选无效)</Checkbox>
+          <FormItem label="是否多选：" v-if="typeof modalFormData.multiple != 'undefined' && modalFormData.type != 'address'">
+            <Checkbox v-model="modalFormData.multiple">多选</Checkbox>
           </FormItem>
           <FormItem label="行内元素：" v-if="typeof modalFormData.inlineBlock != 'undefined'">
             <Checkbox v-model="modalFormData.inlineBlock">是</Checkbox>
@@ -122,20 +125,33 @@ export default {
     };
   },
   methods: {
+    // 拖拽表单2提交事件
     handleSubmit(name) {
-      this.$refs[name].validate((valid) => {
-        if (valid) {
-          debugger;
-          this.$Message.success('Success!');
-        } else {
-          debugger;
-          this.$Message.error('Fail!');
-        }
+      // this.$refs[name].validate((valid) => {
+      //   if (valid) {
+      //     debugger;
+      //     this.$Message.success('Success!');
+      //   } else {
+      //     debugger;
+      //     this.$Message.error('Fail!');
+      //   }
+      // })
+
+
+      this.$http.post('/template_form', {
+        template_id: 111,
+        template_form: this.list2.filter(v => {
+          return !!v.obj.name
+        })
+      }).then(d => {
+        debugger;
       })
     },
     // modal内数据字典选项发生改变触发事件
     handleDataDictChange(val) {
+      // 选中后，val默认赋值到modalFormData.dict
       const obj = JSON.parse(val);
+      // 数据加载中，禁止modal_submit提交按钮
       this.$set(this.modalFormData, 'loading', true);
       this.$http.get(`/label/${obj.id}`).then(d => {
         this.modalFormData = Object.assign({}, this.modalFormData, {
@@ -146,9 +162,9 @@ export default {
         });
       });
     },
-    changeVal(val, element) {
+    // 控件回填数据
+    handleChangeVal(val, element) {
       this.$set(this.formData, element.obj.name, val);
-      // this.formData[element.obj.name] = val;
     },
     // https://github.com/SortableJS/Vue.Draggable#clone
     // 克隆,深拷贝对象
@@ -156,7 +172,6 @@ export default {
       // 添加一个modal标题
       original.obj.modalTitle = original.obj.label || "";
       // 深拷贝对象，防止默认空对象被更改
-      // return Object.assign({}, original);
       return JSON.parse(JSON.stringify(original));
     },
     // modal点击确定执行事件
@@ -198,12 +213,12 @@ export default {
     }
   },
   computed: {
+    // 验证规则
     ruleValidate() {
       const rule_arr = this.list2.filter(v => {
         return v.obj.name && v.obj.require
       });
       const validatePass = (rule, value, callback) => {
-        // debugger;
         if (value === '' || typeof value === 'undefined') {
           callback(new Error('该项为必填项'));
         } else {
@@ -224,17 +239,20 @@ export default {
       }
       return rule_temp;
     },
+    // 数据字典已选择项
     dataDictSelected() {
       return this.list2.map(v => {
         const obj = JSON.parse(v.obj.dict || '{}');
         return obj.id || -1;
       })
     },
+    // 对应控件的数据字典
     dataDictList() {
       return this.dataDict.filter(v => {
         return v.type == this.modalFormData.type;
       })
     },
+    // 拖拽表单1
     dragOptions1() {
       return {
         animation: 0,
@@ -249,6 +267,7 @@ export default {
         sort: false
       };
     },
+    // 拖拽表单2
     dragOptions2() {
       return {
         animation: 0,
@@ -273,16 +292,29 @@ export default {
   display: inline-block;
 }
 
+.m-l-lg {
+  margin-left: 30px
+}
+
+.wrapper {
+  padding: 15px
+}
+
+.b-a {
+  border: 1px solid #ccc;
+}
+
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
 }
 
-.list-group {
+.form-list-group {
   min-height: 200px;
-  border: 1px solid #ccc;
   padding: 20px !important;
 }
+
+/* 设置items下所有鼠标样式为 move */
 
 .items,
 .items * {
@@ -290,6 +322,8 @@ export default {
 }
 
 /* 配置按钮默认位置 */
+
+/* 例如P Hr Title按钮 */
 
 .items .item-icon {
   transition: all 2s ease;
@@ -301,7 +335,7 @@ export default {
   overflow: hidden;
 }
 
-/* form对象下配置按钮位置 */
+/* form控件下配置按钮位置 */
 
 .ivu-form-item.items .item-icon {
   top: -25px;
@@ -314,13 +348,13 @@ export default {
   margin-right: 5px;
 }
 
-/* 克隆对象才显示配置按钮 */
-
-.sortable_item .items:hover .item-icon {
+.items:hover .item-icon {
   transition: inherit;
   opacity: 1;
   max-height: 50px;
 }
+
+/* 提交按钮下方无 margin-bottom */
 
 .form_content .ivu-form-item:last-child {
   margin-bottom: 0;

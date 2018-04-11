@@ -3,14 +3,15 @@ export default (_self, h) => {
     h("Input", {
       props: {
         placeholder: _self.obj.placeholder || "这是一个输入框",
-        maxlength: _self.obj.maxLength || 20,
-        value: _self.obj.items.label_value || ""
+        maxlength: parseInt(_self.obj.maxLength) || 20,
+        value: _self.obj.value || ""
       },
       on: {
         "on-change": function(val) {
           if (!_self.obj.name) {
             return false;
           }
+          _self.obj.value = event.currentTarget.value;
           _self.$emit('handleChangeVal', val.currentTarget.value)
         }
       }
@@ -20,6 +21,7 @@ export default (_self, h) => {
 
 
 export let inputConf = {
+  // 对应数据库内类型
   type: 'input',
   // 是否可配置
   config: true,
@@ -28,9 +30,15 @@ export let inputConf = {
   placeholder: '',
   // 是否显示行内元素
   inlineBlock: false,
+  // 是否必填
   require: true,
+  // 最大长度
   maxLength: 20,
+  // 选项内数据
   items: [{ "label_value": null, "label_name": "" }],
+  value: '',
+  // 表单name
   name: '',
+  // 验证错误提示信息
   ruleError: '该字段不能为空'
 }

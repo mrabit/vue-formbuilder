@@ -32,5 +32,4 @@ for (let i in formList) {
     obj: formList[i]
   });
 }
-// console.log(formList)
 export default list_arr;

@@ -24,6 +24,7 @@ export default (_self, h) => {
 };
 
 export let checkBoxConf = {
+  // 对应数据库内类型
   type: 'checkbox',
   // 是否可配置
   config: true,
@@ -31,9 +32,14 @@ export let checkBoxConf = {
   label: '多选框',
   // 是否显示行内元素
   inlineBlock: false,
+  // 是否必填
   require: true,
+  // 绑定的值
   value: [],
+  // 选项内数据
   items: [{ "label_value": "1", "label_name": "单选框1" }, { "label_value": "2", "label_name": "单选框2" }],
+  // 表单name
   name: '',
+  // 验证错误提示信息
   ruleError: '该选项不能为空'
 }

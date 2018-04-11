@@ -30,16 +30,23 @@ const form_item = {
 };
 
 const display = (val) => {
-  if (typeof val === 'undefined') return 'block';
-  return val == 1 ? 'block' : 'none';
+  // 关联组件值未定义
+  if (typeof val === 'undefined') return true;
+  return val == 1;
 }
 
 export default {
   render(h) {
     var $this = this;
     const arr = (form_item[this.ele] && form_item[this.ele](this, h)) || [];
-    const item_icon = ItemIcon(this, h);
+    // 拥有绑定的值，需回填到控件
+    this.$set(this.obj, 'value', typeof this.value !== "undefined" ? this.value : this.obj.value);
+    // 显示配置按钮并且控件允许被配置
+    const item_icon = this.configIcon && this.obj.config ? ItemIcon(this, h) : [];
+    // 非 Title Hr P 需要FormItem
     if (['Title', 'Hr', 'P'].indexOf((this.ele)) < 0) {
+      // 关联的组件判断不展示
+      if (!display(this.data[this.obj.parent_name])) return;
       let FormItem = {
         class: {
           'items': true,
@@ -62,7 +69,7 @@ export default {
           },
         },
         style: {
-          display: this.obj.inlineBlock ? 'inline-block' : display(this.data[this.obj.parent_name]),
+          display: this.obj.inlineBlock ? 'inline-block' : 'block',
           width: this.obj.inlineBlock ? '33%' : 'auto',
         }
       };
@@ -86,25 +93,36 @@ export default {
 
   },
   props: {
+    // 当前控件的类型
     ele: {
       type: String,
       default: "Input"
     },
-    index: {
-      type: Number,
-      default: 0
-    },
+    // 当前控件的配置
     obj: {
       type: Object,
       default () {
         return {};
       }
     },
+    // 当前控件的index,config 和 delete 会用到
+    index: {
+      type: Number,
+      default: 0
+    },
+    // 整个表单的数据
     data: {
       type: Object,
       default () {
         return {}
       }
-    }
+    },
+    // 是否显示配置按钮
+    configIcon: {
+      type: Boolean,
+      default: false
+    },
+    // 当前控件绑定的值 方便数据回填
+    value: [String, Number, Array]
   }
 }

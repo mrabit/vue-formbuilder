@@ -24,6 +24,7 @@ export default (_self, h) => {
 };
 
 export let textConf = {
+  // 对应数据库内类型
   type: 'textarea',
   // 是否可配置
   config: true,
@@ -32,11 +33,16 @@ export let textConf = {
   placeholder: '',
   // 是否显示行内元素
   inlineBlock: false,
+  // 最大长度
   maxLength: 200,
+  // 是否必填
   require: true,
   // 文本域行高 
   maxRows: 5,
+  // 绑定的值
   value: "",
+  // 表单name
   name: '',
+  // 验证错误提示信息
   ruleError: '该字段不能为空'
 }

@@ -10,7 +10,7 @@
       <li v-for="(item,index) in uploadList" :key="index">
         <template v-if="item.status == 'finished'">
           <p style="display: inline-block">
-            <a v-if="!item.visible" :href="item.url" target="_blank">{{item.name}}{{item.name == item.file_name?"":'('+item.file_name+')'}}</a>
+            <a v-if="!item.visible" :href="item.url" target="_blank">{{item.name}}{{!!item.file_name && (item.name == item.file_name?"":'('+item.file_name+')')}}</a>
             <Input @on-enter="handleChangeAlias" autofocus placeholder="请设置附件别名" v-else v-model="formData.file_name" style="width: 300px"></Input>
           </p>
           <p style="float:right">
