@@ -1,6 +1,6 @@
-# 基于vue + vuedraggable实现自定义表单控件
+# 基于Vue + Vue.Draggable实现自定义表单控件
 
-> 自定义表单控件
+> 新项目需要用到工作流设定 + 自定义表单控件，这里列出了自定义表单控件的代码实现,可实现自定义表单控件,可拖拽排序，自定义属性
 
 ## 效果预览
 
@@ -61,3 +61,8 @@ npm run dev
 │       └── index.js
 └── static
 ```
+
+相关插件：
+- [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable)
+- [iView](https://www.iviewui.com/docs/guide/install)
+- [Vue.js](https://vuejs.org/)
