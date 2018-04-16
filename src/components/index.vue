@@ -97,12 +97,6 @@
 import draggable from "vuedraggable";
 import renders from "./custom_form/Render";
 import formList from "./custom_form/FormList";
-// const modalFormData_default = {
-//   label: '',
-//   listIndex: 0,
-//   require: false,
-//   placeholder: ''
-// };
 export default {
   name: "hello",
   components: {

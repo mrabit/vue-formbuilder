@@ -15,7 +15,7 @@ const temp_data = (size, parentIndex, parentName) => {
 
 export default (_self, h) => {
   return [
-    h("ICascader", {
+    h("cascaderMulti", {
       props: {
         placeholder: _self.obj.placeholder || "这是一个级联选择器",
         data: temp_data(3, 0, '数据'),

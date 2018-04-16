@@ -1,7 +1,7 @@
 import area from '../config/area'
 export default (_self, h) => {
   return [
-    h('ICascader', {
+    h('cascaderMulti', {
       style: {
         width: '200px',
         display: 'inline-block'
