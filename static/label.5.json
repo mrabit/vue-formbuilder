@@ -1,0 +1,14 @@
+{
+  "items": [{
+      "label_value": "1",
+      "label_name": "男"
+    },
+    {
+      "label_value": "2",
+      "label_name": "女"
+    }
+  ],
+  "status": "success",
+  "code": 200,
+  "name": "sex"
+}

@@ -147,7 +147,7 @@ export default {
       const obj = JSON.parse(val);
       // 数据加载中，禁止modal_submit提交按钮
       this.$set(this.modalFormData, 'loading', true);
-      this.$http.get(`/label/${obj.id}`).then(d => {
+      this.$http.get(`/static/label.${obj.id}.json`).then(d => {
         this.modalFormData = Object.assign({}, this.modalFormData, {
           name: d.data.name,
           loading: false,
@@ -274,7 +274,8 @@ export default {
     }
   },
   created() {
-    this.$http.get('/label').then(d => {
+    // /static/label.json
+    this.$http.get('/static/label.json').then(d => {
       this.dataDict = d.data.items;
     })
   }

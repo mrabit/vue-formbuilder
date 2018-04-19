@@ -17,7 +17,7 @@ Vue.use(cascaderSelect);
 Vue.use(uploadCustom);
 Vue.use(iviewArea);
 
-axios.defaults.baseURL = '/apis';
+// axios.defaults.baseURL = '/apis';
 Vue.prototype.$http = axios;
 
 /* eslint-disable no-new */

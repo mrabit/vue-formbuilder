@@ -6,7 +6,8 @@ export default (_self, h) => {
         placeholder: _self.obj.placeholder || "请选择日期",
         type: 'date',
         format: 'yyyy年MM月dd日',
-        value: _self.obj.value || ""
+        value: _self.obj.value || moment()
+          .format('YYYY-MM-DD')
       },
       on: {
         "on-change" (arr) {
@@ -38,6 +39,6 @@ export let datePickerConf = {
   // 绑定的值
   value: moment()
     .format('YYYY-MM-DD'),
-    // 验证错误提示信息
+  // 验证错误提示信息
   ruleError: '选项不能为空'
 }

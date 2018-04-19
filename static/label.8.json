@@ -1,0 +1,18 @@
+{
+  "items": [{
+      "label_value": "1",
+      "label_name": "电话投诉"
+    },
+    {
+      "label_value": "2",
+      "label_name": "书信投诉"
+    },
+    {
+      "label_value": "3",
+      "label_name": "网络投诉"
+    }
+  ],
+  "status": "success",
+  "code": 200,
+  "name": "complaint"
+}
