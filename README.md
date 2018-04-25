@@ -4,7 +4,11 @@
 
 ## 效果预览
 
-![20180416 at 23.23.gif](https://blog.mrabit.com/Uploads/Picture/2018-04-16/1523892565.gif)
+![1.gif](https://blog.mrabit.com/Uploads/Picture/2018-04-25/1524627362.gif)
+
+![2.gif](https://blog.mrabit.com/Uploads/Picture/2018-04-25/1524627369.gif)
+
+![3.gif](https://blog.mrabit.com/Uploads/Picture/2018-04-25/1524627376.gif)
 
 ## 运行使用
 
@@ -24,24 +28,24 @@ npm run dev
 ├── README.md
 ├── build
 ├── config
+├── dist
 ├── index.html
 ├── package.json
 ├── src
-│   ├── App.vue
-│   ├── assets
-│   ├── components
-│   │   ├── custom_form             //自定义表单组件
-│   │   │   ├── FormList.js         //表单列表    
-│   │   │   ├── ItemIcon.js         //表单图标配置
-│   │   │   ├── Render.js           //表单列表渲染
-│   │   │   ├── components          //表单组件
-│   │   │   │   └── Uploads         //上传组件
-│   │   │   │       ├── index.js
-│   │   │   │       └── upload.vue
-│   │   │   ├── config              //配置文件
-│   │   │   │   ├── area.js         //地区配置
-│   │   │   │   └── trigger.js      //表单验证触发事件
-│   │   │   └── control             //表单控件列表
+│   ├── App.vue
+│   ├── assets
+│   ├── components
+│   │   ├── custom_form             //自定义表单组件
+│   │   │   ├── FormList.js         //表单列表    
+│   │   │   ├── ItemIcon.js         //表单图标配置
+│   │   │   ├── Render.js           //表单列表渲染
+│   │   │   ├── components          //表单公用组件
+│   │   │   │   └── Uploads         //上传组件
+│   │   │   │       └── upload.vue
+│   │   │   ├── config              //配置文件
+│   │   │   │   ├── area.js         //地区配置
+│   │   │   │   └── trigger.js      //表单验证触发事件
+│   │   │   ├── control             //表单控件列表
 │   │   │       ├── Address.js      //地区选择
 │   │   │       ├── Cascader.js     //多级联动
 │   │   │       ├── CheckBox.js     //多选框
@@ -54,12 +58,22 @@ npm run dev
 │   │   │       ├── Text.js         //文本域
 │   │   │       ├── Title.js        //标题
 │   │   │       └── Uploads.js      //上传控件
+│   │   │   └── index.js            //控件注册
 │   │   ├── index.vue               //自定义表单页面
 │   │   └── render.vue              //表单渲染,数据回填页面
-│   ├── main.js                     
-│   └── router
-│       └── index.js
-└── static
+│   ├── main.js                     //入口文件
+│   └── router                      //路由配置
+│       └── index.js
+└── static                          //静态数据模版
+    ├── label.1.json
+    ├── label.12.json
+    ├── label.14.json
+    ├── label.17.json
+    ├── label.19.json
+    ├── label.3.json
+    ├── label.5.json
+    ├── label.8.json
+    └── label.json
 ```
 
 相关插件：

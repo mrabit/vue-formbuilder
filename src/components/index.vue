@@ -29,7 +29,7 @@
         </FormItem>
       </Form>
       </Col>
-      <Modal v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false" @on-visible-change="handleCancel">
+      <Modal v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false">
         <Form class="form_content" :label-width="80" :model="modalFormData" ref="modalFormData">
           <FormItem label="控件名称：" v-if="typeof modalFormData.label != 'undefined'">
             <i-input v-model="modalFormData.label" placeholder="请输入控件名称" :maxlength="4"></i-input>
@@ -145,6 +145,9 @@ export default {
         return !!v.obj.name
       })));
     },
+    handleReset() {
+      this.sortable_item = [];
+    },
     // modal内数据字典选项发生改变触发事件
     handleDataDictChange(val) {
       // 选中后，val默认赋值到modalFormData.dict
@@ -182,8 +185,7 @@ export default {
       this.handleCancel();
     },
     // modal点击取消执行事件，清空当前modal内容
-    handleCancel(showModal) {
-      if (showModal) return;
+    handleCancel() {
       this.showModal = false;
       setTimeout(_ => {
         this.modalFormData = {
@@ -213,6 +215,13 @@ export default {
     // 更改当前渲染字段是否显示
     changeVisibility(index, visibility) {
       this.$set(this.sortable_item[index].obj, 'visibility', visibility);
+    }
+  },
+  watch: {
+    showModal(val) {
+      if (!val) {
+        this.handleCancel();
+      }
     }
   },
   computed: {
