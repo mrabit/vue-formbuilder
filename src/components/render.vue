@@ -10,16 +10,12 @@
   </Form>
 </template>
 <script>
-import renders from "./custom_form/Render";
 export default {
   data() {
     return {
       template_form: [],
       formData: {}
     }
-  },
-  components: {
-    renders
   },
   methods: {
     // 控件回填数据
@@ -30,10 +26,8 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          debugger;
           this.$Message.success('Success!');
         } else {
-          debugger;
           this.$Message.error('Fail!');
         }
       })

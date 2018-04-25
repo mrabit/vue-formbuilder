@@ -77,7 +77,7 @@
             </InputNumber>
           </FormItem>
           <FormItem label="是否必填：" v-if="typeof modalFormData.require != 'undefined'">
-            <Checkbox disabled v-model="modalFormData.require">必填</Checkbox>
+            <Checkbox v-model="modalFormData.require">必填</Checkbox>
           </FormItem>
           <FormItem label="校验错误：" v-if="typeof modalFormData.ruleError != 'undefined'">
             <i-input v-model="modalFormData.ruleError" placeholder="请输入校验错误提示"></i-input>
@@ -129,11 +129,10 @@ export default {
     };
   },
   methods: {
-    // 拖拽表单2提交事件
+    // 克隆表单提交事件
     handleSubmit(name) {
       // this.$refs[name].validate((valid) => {
       //   if (valid) {
-      //     debugger;
       //     this.$Message.success('Success!');
       //   } else {
       //     debugger;
@@ -145,6 +144,7 @@ export default {
         return !!v.obj.name
       })));
     },
+    // 清空克隆表单
     handleReset() {
       this.sortable_item = [];
     },
@@ -210,7 +210,18 @@ export default {
     },
     // 删除克隆控件
     removeEle(index) {
+      let name = this.sortable_item[index].obj.name;
       this.sortable_item.splice(index, 1);
+      if (!name) return;
+      for (let i in this.sortable_item) {
+        // 当relation为true并且关联字段被确认
+        if (this.sortable_item[i].obj.relation && this.sortable_item[i].obj.relation_name === name) {
+          this.$set(this.sortable_item[i].obj, "relation", false);
+          this.$set(this.sortable_item[i].obj, "relation_name", "");
+          this.$set(this.sortable_item[i].obj, "relation_value", "");
+          break;
+        }
+      }
     },
     // 更改当前渲染字段是否显示
     changeVisibility(index, visibility) {
@@ -376,6 +387,23 @@ export default {
 
 .form_content .ivu-form-item:last-child {
   margin-bottom: 0;
+}
+
+
+/* 表单校验选项样式 */
+
+.ivu-form-item-required .ivu-form-item-label:before {
+  content: '';
+}
+
+.items.sortable-items-required .ivu-form-item-label:before {
+  content: '*';
+  display: inline-block;
+  margin-right: 4px;
+  line-height: 1;
+  font-family: SimSun;
+  font-size: 12px;
+  color: #ed3f14;
 }
 
 </style>

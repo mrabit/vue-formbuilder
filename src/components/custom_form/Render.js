@@ -53,6 +53,8 @@ export default {
     this.$set(this.obj, 'value', typeof this.value !== "undefined" ? this.value : this.obj.value);
     // 显示配置按钮并且控件允许被配置
     const item_icon = this.configIcon && this.obj.config ? ItemIcon(this, h) : [];
+    // 已被绑定name,且require为必填,视为校验字段
+    const validate = !!this.obj.name && !!this.obj.require;
     // 非 Title Hr P 需要FormItem
     if (['title', 'hr', 'p'].indexOf((this.ele.toLowerCase())) < 0) {
       // 关联的组件判断是否展示
@@ -66,8 +68,7 @@ export default {
       let FormItem = {
         class: {
           'items': true,
-          // 当存在name并且require为必填
-          'ivu-form-item-required': !!this.obj.name && !!this.obj.require
+          'sortable-items-required': validate
         },
         props: {
           label: (this.obj.label || this.ele) + '：',
@@ -75,11 +76,11 @@ export default {
           prop: this.obj.name || 'temp',
           // 验证规则
           rules: {
-            required: !!this.obj.name && !!this.obj.require,
+            required: validate,
             message: this.obj.ruleError || '该项为必填项',
             trigger: trigger[this.obj.type],
             validator: (rule, value, callback) => {
-              if (!!this.obj.name && !!this.obj.require && (value === '' || typeof value === 'undefined')) {
+              if (validate && !value) {
                 callback(new Error('该项为必填项'));
               } else {
                 callback();
