@@ -12,18 +12,18 @@ import { datePickerConf } from './control/DatePicker'
 import { addressConf } from './control/Address';
 
 const formList = {
-  Title: titleConf,
-  Hr: hrConf,
-  P: pConf,
-  Input: inputConf,
-  Select: selectConf,
-  Radio: radioConf,
-  CheckBox: checkBoxConf,
-  DatePicker: datePickerConf,
-  Cascader: cascaderConf,
-  Address: addressConf,
-  Uploads: uploadsConf,
-  Text: textConf,
+  title: titleConf,
+  hr: hrConf,
+  p: pConf,
+  input: inputConf,
+  select: selectConf,
+  radio: radioConf,
+  checkbox: checkBoxConf,
+  datepicker: datePickerConf,
+  cascader: cascaderConf,
+  address: addressConf,
+  uploads: uploadsConf,
+  text: textConf,
 };
 let list_arr = [];
 for (let i in formList) {

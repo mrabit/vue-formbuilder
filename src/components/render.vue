@@ -1,7 +1,7 @@
 <template>
   <Form ref="formValidate" class="b-a" :label-width="100" :model="formData" @submit.native.prevent>
     <p>未绑定数据字典控件无效</p>
-    <renders v-for="(element,index) in template_form" :key="index" :ele="element.ele" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => handleChangeVal(val,element)" :value="formData[element.obj.name]">
+    <renders v-for="(element,index) in template_form" :key="index" :index="index" :ele="element.ele" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => handleChangeVal(val,element)" @changeVisibility="changeVisibility" :value="formData[element.obj.name]" :sortableItem="template_form">
     </renders>
     <FormItem>
       <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
@@ -38,107 +38,13 @@ export default {
         }
       })
     },
+    // 更改当前渲染字段是否显示
+    changeVisibility(index, visibility) {
+      this.$set(this.template_form[index].obj, 'visibility', visibility);
+    }
   },
   created() {
-    this.template_form = [{
-      "ele": "Input",
-      "obj": {
-        "dict": "{\"id\":1,\"parent_name\":null}",
-        "name": "name",
-        "type": "input",
-        "items": [{
-          "label_name": null,
-          "label_value": null
-        }],
-        "label": "姓名",
-        "config": true,
-        "loading": false,
-        "require": true,
-        "listIndex": 0,
-        "maxLength": 20,
-        "ruleError": "该字段不能为空",
-        "modalTitle": "输入框",
-        "inlineBlock": false,
-        "parent_name": null,
-        "placeholder": null
-      }
-    }, {
-      "ele": "Radio",
-      "obj": {
-        "dict": "{\"id\":5,\"parent_name\":null}",
-        "name": "sex",
-        "type": "radio",
-        "items": [{
-          "label_name": "男",
-          "label_value": "1"
-        }, {
-          "label_name": "女",
-          "label_value": "2"
-        }],
-        "label": "性别",
-        "value": null,
-        "config": true,
-        "loading": false,
-        "require": true,
-        "listIndex": 1,
-        "ruleError": "请选择",
-        "modalTitle": "单选框",
-        "inlineBlock": false,
-        "parent_name": null
-      }
-    }, {
-      "ele": "Select",
-      "obj": {
-        "dict": "{\"id\":14,\"parent_name\":null}",
-        "name": "is_case",
-        "type": "select",
-        "items": [{
-          "label_name": "是",
-          "label_value": "1"
-        }, {
-          "label_name": "否",
-          "label_value": "2"
-        }],
-        "label": "资料补齐",
-        "config": true,
-        "loading": false,
-        "require": true,
-        "listIndex": 2,
-        "ruleError": "请选择",
-        "modalTitle": "选择框",
-        "inlineBlock": false,
-        "parent_name": null,
-        "placeholder": null
-      }
-    }, {
-      "ele": "Input",
-      "obj": {
-        "dict": "{\"id\":17,\"parent_name\":\"is_case\"}",
-        "name": "case",
-        "type": "input",
-        "items": [{
-          "label_name": null,
-          "label_value": null
-        }],
-        "label": "资料",
-        "config": true,
-        "loading": false,
-        "require": true,
-        "listIndex": 3,
-        "maxLength": 20,
-        "ruleError": "该字段不能为空",
-        "modalTitle": "输入框",
-        "inlineBlock": false,
-        "parent_name": "is_case",
-        "placeholder": null
-      }
-    }]
-    this.formData = {
-      name: '哈哈',
-      sex: '2',
-      is_case: '2',
-      case: '啦啦啦'
-    }
+    this.template_form = JSON.parse(localStorage.getItem('template_form') || '[]');
   }
 }
 

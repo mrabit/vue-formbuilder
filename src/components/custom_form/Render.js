@@ -1,63 +1,82 @@
 import ItemIcon from './ItemIcon';
-import Input from './control/Input';
-import CheckBox from './control/CheckBox';
-import Radio from './control/Radio';
-import Select from './control/Select';
-import Text from './control/Text';
-import Cascader from './control/Cascader';
-import Title from './control/Title';
-import Hr from './control/Hr';
-import P from './control/P';
-import Uploads from './control/Uploads';
-import DatePicker from './control/DatePicker';
-import Address from './control/Address';
+import input from './control/Input';
+import checkbox from './control/CheckBox';
+import radio from './control/Radio';
+import select from './control/Select';
+import text from './control/Text';
+import cascader from './control/Cascader';
+import title from './control/Title';
+import hr from './control/Hr';
+import p from './control/P';
+import uploads from './control/Uploads';
+import datepicker from './control/DatePicker';
+import address from './control/Address';
 
 import trigger from './config/trigger';
 
 const form_item = {
-  Title,
-  Hr,
-  P,
-  Input,
-  Select,
-  Radio,
-  CheckBox,
-  DatePicker,
-  Cascader,
-  Address,
-  Uploads,
-  Text,
+  title,
+  hr,
+  p,
+  input,
+  select,
+  radio,
+  checkbox,
+  datepicker,
+  cascader,
+  address,
+  uploads,
+  text,
 };
 
-const display = (val) => {
-  // 关联组件值未定义
-  if (typeof val === 'undefined') return true;
-  return val == 1;
+const displayControl = (_self, sortableItem, name, value) => {
+  // 默认不显示
+  let display = false;
+  for (let i in sortableItem) {
+    // 循环出sortableItem内被关联字段并且其状态为显示并且其值与用户预设被关联字段值匹配
+    if (sortableItem[i].obj.name == name && sortableItem[i].obj.visibility && sortableItem[i].obj.value == value) {
+      display = true;
+      // name唯一,已匹配则不必循环之后数据
+      break;
+    }
+  }
+  return display;
 }
 
 export default {
+  name: 'renders',
   render(h) {
     var $this = this;
-    const arr = (form_item[this.ele] && form_item[this.ele](this, h)) || [];
+    // 获取当前控件渲染
+    const arr = (form_item[this.ele.toLowerCase()] && form_item[this.ele.toLowerCase()](this, h)) || [];
     // 拥有绑定的值，需回填到控件
     this.$set(this.obj, 'value', typeof this.value !== "undefined" ? this.value : this.obj.value);
     // 显示配置按钮并且控件允许被配置
     const item_icon = this.configIcon && this.obj.config ? ItemIcon(this, h) : [];
     // 非 Title Hr P 需要FormItem
-    if (['Title', 'Hr', 'P'].indexOf((this.ele)) < 0) {
-      // 关联的组件判断不展示
-      if (!display(this.data[this.obj.parent_name])) return;
+    if (['title', 'hr', 'p'].indexOf((this.ele.toLowerCase())) < 0) {
+      // 关联的组件判断是否展示
+      if (this.obj.relation && !displayControl(this, this.sortableItem, this.obj.relation_name, this.obj.relation_value)) {
+        // 隐藏该控件并设置该控件标记为隐藏
+        this.$emit('changeVisibility', this.index, false);
+        return h("span");
+      }
+      // 设置该控件标记为显示
+      this.$emit('changeVisibility', this.index, true);
       let FormItem = {
         class: {
           'items': true,
+          // 当存在name并且require为必填
           'ivu-form-item-required': !!this.obj.name && !!this.obj.require
         },
         props: {
           label: (this.obj.label || this.ele) + '：',
+          // 指定验证name
           prop: this.obj.name || 'temp',
+          // 验证规则
           rules: {
             required: !!this.obj.name && !!this.obj.require,
-            message: this.obj.ruleError || '该字段不能为空',
+            message: this.obj.ruleError || '该项为必填项',
             trigger: trigger[this.obj.type],
             validator: (rule, value, callback) => {
               if (!!this.obj.name && !!this.obj.require && (value === '' || typeof value === 'undefined')) {
@@ -69,7 +88,9 @@ export default {
           },
         },
         style: {
+          // 是否显示行内元素
           display: this.obj.inlineBlock ? 'inline-block' : 'block',
+          // 行内元素width为30%
           width: this.obj.inlineBlock ? '33%' : 'auto',
         }
       };
@@ -90,13 +111,12 @@ export default {
         arr.concat(item_icon)
       );
     }
-
   },
   props: {
     // 当前控件的类型
     ele: {
       type: String,
-      default: "Input"
+      default: "input"
     },
     // 当前控件的配置
     obj: {
@@ -123,6 +143,13 @@ export default {
       default: false
     },
     // 当前控件绑定的值 方便数据回填
-    value: [String, Number, Array]
+    value: [String, Number, Array],
+    // 当前被clone控件列表
+    sortableItem: {
+      type: Array,
+      default () {
+        return [];
+      }
+    }
   }
 }

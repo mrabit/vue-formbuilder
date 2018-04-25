@@ -13,7 +13,7 @@ export default (_self, h) => {
         filterable: false
       },
       on: {
-        "handleCascaderValue" (arr) {
+        "on-change" (arr) {
           if (!_self.obj.name) {
             return false;
           }
@@ -67,5 +67,13 @@ export let addressConf = {
   // 绑定的值
   value: [],
   // 验证错误提示信息
-  ruleError: '请选择并输入详细地址'
+  ruleError: '请选择并输入详细地址',
+  // 是否关联字段
+  relation: false,
+  // 关联字段name
+  relation_name: '',
+  // 关联字段value
+  relation_value: '',
+  // 是否被渲染
+  visibility: true
 }

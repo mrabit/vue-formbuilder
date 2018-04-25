@@ -14,6 +14,7 @@ export default (_self, h) => {
           if (!_self.obj.name) {
             return false;
           }
+          _self.obj.value = arr;
           _self.$emit('handleChangeVal', arr)
         }
       }
@@ -40,5 +41,13 @@ export let datePickerConf = {
   value: moment()
     .format('YYYY-MM-DD'),
   // 验证错误提示信息
-  ruleError: '选项不能为空'
+  ruleError: '选项不能为空',
+  // 是否关联字段
+  relation: false,
+  // 关联字段name
+  relation_name: '',
+  // 关联字段value
+  relation_value: '',
+  // 是否被渲染
+  visibility: true
 }

@@ -11,7 +11,7 @@
         <template v-if="item.status == 'finished'">
           <p style="display: inline-block">
             <a v-if="!item.visible" :href="item.url" target="_blank">{{item.name}}{{!!item.file_name && (item.name == item.file_name?"":'('+item.file_name+')')}}</a>
-            <Input @on-enter="handleChangeAlias" autofocus placeholder="请设置附件别名" v-else v-model="formData.file_name" style="width: 300px"></Input>
+            <i-input @on-enter="handleChangeAlias" autofocus placeholder="请设置附件别名" v-else v-model="formData.file_name" style="width: 300px"></i-input>
           </p>
           <p style="float:right">
             <template v-if="!item.visible">
@@ -45,7 +45,7 @@ export default {
       },
       imgName: "",
       visible: false,
-      uploadList: [{}]
+      uploadList: []
     };
   },
   methods: {
@@ -72,11 +72,15 @@ export default {
     handleRemove(file) {
       const fileList = this.$refs.upload.fileList;
       this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+      // 更新uploadList
+      this.uploadList = this.$refs.upload.fileList;
     },
     handleSuccess(res, file) {
-      file.url = res.data.image_url;
-      file.name = res.data.name;
-      file.file_name = res.data.name;
+      file.url = res.items.image_url;
+      file.name = res.items.name;
+      file.file_name = res.items.name;
+      // 更新uploadList
+      this.uploadList = this.$refs.upload.fileList;
       this.$emit('handleUploadsValue', this.uploadList);
     },
     handleFormatError(file) {
@@ -94,6 +98,8 @@ export default {
       });
     },
     handleBeforeUpload() {
+      // 更新uploadList
+      this.uploadList = this.$refs.upload.fileList;
       const check = this.uploadList.length < 5;
       if (!check) {
         this.$Notice.warning({

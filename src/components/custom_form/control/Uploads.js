@@ -14,6 +14,7 @@ export default (_self, h) => {
           if (!_self.obj.name) {
             return false;
           }
+          _self.obj.value = arr;
           _self.$emit('handleChangeVal', arr)
         }
       }
@@ -28,7 +29,7 @@ export const uploadsConf = {
   // 是否可配置
   config: true,
   // 上传地址
-  action: '/apis/imageupload',
+  action: 'http://workflow.test/imageupload',
   // 是否必填
   require: true,
   // 控件左侧label内容
@@ -40,5 +41,13 @@ export const uploadsConf = {
   // 表单name
   name: '',
   // 验证错误提示信息
-  ruleError: '请上传图片'
+  ruleError: '请上传图片',
+  // 是否关联字段
+  relation: false,
+  // 关联字段name
+  relation_name: '',
+  // 关联字段value
+  relation_value: '',
+  // 是否被渲染
+  visibility: true
 }

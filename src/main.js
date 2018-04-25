@@ -5,16 +5,16 @@ import App from './App'
 import router from './router'
 import iview from 'iview';
 import 'iview/dist/styles/iview.css'
-import cascaderSelect from 'cascader-multi';
-import uploadCustom from './components/custom_form/components/Uploads';
+import cascaderMulti from 'cascader-multi';
 import iviewArea from 'iview-area';
+import custom_form from './components/custom_form';
 
 import axios from 'axios';
 
 Vue.config.productionTip = false
 Vue.use(iview);
-Vue.use(cascaderSelect);
-Vue.use(uploadCustom);
+Vue.use(cascaderMulti);
+Vue.use(custom_form);
 Vue.use(iviewArea);
 
 // axios.defaults.baseURL = '/apis';

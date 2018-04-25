@@ -3,9 +3,9 @@
     <Row>
       <Col span="12" class="sortable_container">
       <Form :label-width="100" class="b-a">
-        <draggable :clone="cloneData" :list="list" :options="dragOptions1">
+        <draggable :clone="cloneData" :list="form_list" :options="dragOptions1">
           <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders v-for="(element,index) in list" :key="index" :ele="element.ele" :obj="element.obj || {}"></renders>
+            <renders v-for="(element,index) in form_list" :key="index" :ele="element.ele" :obj="element.obj || {}"></renders>
           </transition-group>
         </draggable>
       </Form>
@@ -17,9 +17,9 @@
             <p>未绑定数据字典控件无效</p>
           </li>
         </ul>
-        <draggable :list="list2" :options="dragOptions2">
+        <draggable :list="sortable_item" :options="dragOptions2">
           <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" v-for="(element,index) in list2" :key="index" :index="index" :ele="element.ele" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => handleChangeVal(val,element)" :config-icon="true">
+            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" @changeVisibility="changeVisibility" v-for="(element,index) in sortable_item" :key="index" :index="index" :ele="element.ele" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => handleChangeVal(val,element)" :sortableItem="sortable_item" :config-icon="true">
             </renders>
           </transition-group>
         </draggable>
@@ -29,10 +29,10 @@
         </FormItem>
       </Form>
       </Col>
-      <Modal v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false">
+      <Modal v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false" @on-visible-change="handleCancel">
         <Form class="form_content" :label-width="80" :model="modalFormData" ref="modalFormData">
           <FormItem label="控件名称：" v-if="typeof modalFormData.label != 'undefined'">
-            <Input v-model="modalFormData.label" placeholder="请输入控件名称" :maxlength="4"></Input>
+            <i-input v-model="modalFormData.label" placeholder="请输入控件名称" :maxlength="4"></i-input>
           </FormItem>
           <FormItem label="数据字典：" v-if="showModal">
             <Select v-model="modalFormData.dict" filterable @on-change="handleDataDictChange">
@@ -42,10 +42,23 @@
             </Select>
           </FormItem>
           <FormItem label="name属性：" v-if="typeof modalFormData.name != 'undefined'">
-            <Input v-model="modalFormData.name" placeholder="" disabled></Input>
+            <i-input v-model="modalFormData.name" placeholder="" disabled></i-input>
+          </FormItem>
+          <FormItem label="关联数据：" v-if="typeof modalFormData.relation != 'undefined'">
+            <!-- 当绑定name并且当前relationList存在数据时候才可以关联字段 -->
+            <Checkbox :disabled="!modalFormData.name || !relationList.length" v-model="modalFormData.relation">是否关联字段</Checkbox>
+          </FormItem>
+          <FormItem label="关联配置：" v-if="typeof modalFormData.relation != 'undefined' && modalFormData.relation">
+            <Select v-model="modalFormData.relation_name" class="inline-block" style="width: 150px" @on-change="_=>modalFormData.relation_value = ''">
+              <Option :disabled="item.obj.name == modalFormData.name" v-for="(item,index) in relationList" :key="index" :value="item.obj.name">{{item.obj.label}}</Option>
+            </Select>
+            <p class="inline-block padder-sm">等于</p>
+            <Select v-model="modalFormData.relation_value" class="inline-block" style="width: 150px">
+              <Option v-for="(item,index) in relationValue" :key="index" :value="item.label_value">{{item.label_name}}</Option>
+            </Select>
           </FormItem>
           <FormItem label="placeholder：" v-if="typeof modalFormData.placeholder != 'undefined'">
-            <Input v-model="modalFormData.placeholder" placeholder="请输入placeholder"></Input>
+            <i-input v-model="modalFormData.placeholder" placeholder="请输入placeholder"></i-input>
           </FormItem>
           <FormItem label="最大长度：" v-if="typeof modalFormData.maxLength != 'undefined'">
             <InputNumber v-model="modalFormData.maxLength" placeholder="请输入文本限制最大长度">
@@ -67,7 +80,7 @@
             <Checkbox disabled v-model="modalFormData.require">必填</Checkbox>
           </FormItem>
           <FormItem label="校验错误：" v-if="typeof modalFormData.ruleError != 'undefined'">
-            <Input v-model="modalFormData.ruleError" placeholder="请输入校验错误提示"></Input>
+            <i-input v-model="modalFormData.ruleError" placeholder="请输入校验错误提示"></i-input>
           </FormItem>
           <FormItem label="是否多选：" v-if="typeof modalFormData.multiple != 'undefined' && modalFormData.type != 'address'">
             <Checkbox v-model="modalFormData.multiple">多选</Checkbox>
@@ -95,18 +108,15 @@
 </template>
 <script>
 import draggable from "vuedraggable";
-import renders from "./custom_form/Render";
-import formList from "./custom_form/FormList";
+import form_list from "./custom_form/FormList";
 export default {
-  name: "hello",
   components: {
-    draggable,
-    renders
+    draggable
   },
   data() {
     return {
-      list: formList,
-      list2: [],
+      form_list: form_list,
+      sortable_item: [],
       showModal: false,
       // 深拷贝对象，防止默认空对象被更改
       // 颜色选择器bug，对象下color不更新      
@@ -131,15 +141,9 @@ export default {
       //   }
       // })
 
-
-      this.$http.post('/template_form', {
-        template_id: 111,
-        template_form: this.list2.filter(v => {
-          return !!v.obj.name
-        })
-      }).then(d => {
-        debugger;
-      })
+      localStorage.setItem('template_form', JSON.stringify(this.sortable_item.filter(v => {
+        return !!v.obj.name
+      })));
     },
     // modal内数据字典选项发生改变触发事件
     handleDataDictChange(val) {
@@ -171,14 +175,15 @@ export default {
     // modal点击确定执行事件
     handleOk() {
       const index = this.modalFormData.listIndex;
-      this.list2[index].obj = Object.assign({},
-        this.list2[index].obj,
+      this.sortable_item[index].obj = Object.assign({},
+        this.sortable_item[index].obj,
         this.modalFormData
       );
       this.handleCancel();
     },
     // modal点击取消执行事件，清空当前modal内容
-    handleCancel() {
+    handleCancel(showModal) {
+      if (showModal) return;
       this.showModal = false;
       setTimeout(_ => {
         this.modalFormData = {
@@ -189,7 +194,7 @@ export default {
     },
     // 显示modal,配置被克隆控件
     confEle(index) {
-      const list_temp = Object.assign({}, this.list2[index]);
+      const list_temp = Object.assign({}, this.sortable_item[index]);
       for (let i in list_temp.obj) {
         this.modalFormData[i] = list_temp.obj[i];
       }
@@ -203,39 +208,17 @@ export default {
     },
     // 删除克隆控件
     removeEle(index) {
-      this.list2.splice(index, 1);
+      this.sortable_item.splice(index, 1);
+    },
+    // 更改当前渲染字段是否显示
+    changeVisibility(index, visibility) {
+      this.$set(this.sortable_item[index].obj, 'visibility', visibility);
     }
   },
   computed: {
-    // 验证规则
-    ruleValidate() {
-      const rule_arr = this.list2.filter(v => {
-        return v.obj.name && v.obj.require
-      });
-      const validatePass = (rule, value, callback) => {
-        if (value === '' || typeof value === 'undefined') {
-          callback(new Error('该项为必填项'));
-        } else {
-          callback();
-        }
-      };
-      let rule_temp = {
-        temp: [{
-          validator: validatePass,
-          trigger: 'blur'
-        }]
-      };
-      for (let i in rule_arr) {
-        rule_temp[rule_arr[i]['obj']['name']] = [{
-          validator: validatePass,
-          trigger: 'change'
-        }]
-      }
-      return rule_temp;
-    },
     // 数据字典已选择项
     dataDictSelected() {
-      return this.list2.map(v => {
+      return this.sortable_item.map(v => {
         const obj = JSON.parse(v.obj.dict || '{}');
         return obj.id || -1;
       })
@@ -271,13 +254,35 @@ export default {
           put: ["shared"]
         }
       };
+    },
+    // 被关联字段列表
+    relationList() {
+      // 只有type内三项可作为被关联字段
+      let type = ['select', 'radio', 'checkbox'];
+      const arr = this.sortable_item.filter(k => {
+        return type.indexOf(k.ele) >= 0 && !!k.obj.name;
+      })
+      return arr;
+    },
+    // 被关联字段数据
+    relationValue() {
+      const name = this.modalFormData.relation_name;
+      let items = [];
+      if (!name) return items;
+      for (let i in this.sortable_item) {
+        if (this.sortable_item[i].obj.name == name) {
+          items = this.sortable_item[i].obj.items;
+        }
+      }
+      return items;
     }
   },
   created() {
     // /static/label.json
     this.$http.get('/static/label.json').then(d => {
       this.dataDict = d.data.items;
-    })
+    });
+    this.sortable_item = JSON.parse(localStorage.getItem('template_form') || '[]');
   }
 };
 
@@ -293,6 +298,15 @@ export default {
 
 .wrapper {
   padding: 15px
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.padder-sm {
+  padding-right: 10px;
+  padding-left: 10px
 }
 
 .b-a {

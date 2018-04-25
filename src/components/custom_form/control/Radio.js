@@ -43,5 +43,13 @@ export let radioConf = {
   // 表单name
   name: '',
   // 验证错误提示信息
-  ruleError: '请选择'
+  ruleError: '请选择',
+  // 是否关联字段
+  relation: false,
+  // 关联字段name
+  relation_name: '',
+  // 关联字段value
+  relation_value: '',
+  // 是否被渲染
+  visibility: true
 }
