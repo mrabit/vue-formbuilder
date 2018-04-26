@@ -2,28 +2,28 @@
   <div class="container">
     <i-row>
       <i-col span="12" class="sortable_container">
-      <Form :label-width="100" class="b-a">
-        <draggable :clone="cloneData" :list="form_list" :options="dragOptions1">
-          <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders v-for="(element,index) in form_list" :key="index" :ele="element.ele" :obj="element.obj || {}"></renders>
-          </transition-group>
-        </draggable>
-      </Form>
+        <Form :label-width="100" class="b-a">
+          <draggable :clone="cloneData" :list="form_list" :options="dragOptions1">
+            <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
+              <renders v-for="(element,index) in form_list" :key="index" :ele="element.ele" :obj="element.obj || {}"></renders>
+            </transition-group>
+          </draggable>
+        </Form>
       </i-col>
       <i-col span="12" class="sortable_item">
-      <Form ref="formValidate" class="b-a" :label-width="100" :model="formData" @submit.native.prevent>
-        <Alert style="margin: 15px 15px 0;" type="warning" show-icon>未绑定数据字典控件无效</Alert>
-        <draggable :list="sortable_item" :options="dragOptions2">
-          <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
-            <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" @changeVisibility="changeVisibility" v-for="(element,index) in sortable_item" :key="index" :index="index" :ele="element.ele" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => handleChangeVal(val,element)" :sortableItem="sortable_item" :config-icon="true">
-            </renders>
-          </transition-group>
-        </draggable>
-        <FormItem>
-          <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
-          <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>
-        </FormItem>
-      </Form>
+        <Form ref="formValidate" class="b-a" :label-width="100" :model="formData" @submit.native.prevent>
+          <Alert style="margin: 15px 15px 0;" type="warning" show-icon>未绑定数据字典控件无效</Alert>
+          <draggable :list="sortable_item" :options="dragOptions2">
+            <transition-group class="form-list-group" type="transition" :name="'flip-list'" tag="div">
+              <renders @handleRemoveEle="removeEle" @handleConfEle="confEle" @changeVisibility="changeVisibility" v-for="(element,index) in sortable_item" :key="index" :index="index" :ele="element.ele" :obj="element.obj || {}" :data="formData" @handleChangeVal="val => handleChangeVal(val,element)" :sortableItem="sortable_item" :config-icon="true">
+              </renders>
+            </transition-group>
+          </draggable>
+          <FormItem>
+            <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
+            <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>
+          </FormItem>
+        </Form>
       </i-col>
       <Modal v-model="showModal" :title="'配置' + modalFormData.modalTitle + '属性'" :mask-closable="false">
         <Form class="form_content" :label-width="80" :model="modalFormData" ref="modalFormData">
@@ -139,6 +139,7 @@ export default {
       localStorage.setItem('template_form', JSON.stringify(this.sortable_item.filter(v => {
         return !!v.obj.name
       })));
+      this.$router.push('/render');
     },
     // 清空克隆表单
     handleReset() {

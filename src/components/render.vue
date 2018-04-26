@@ -26,7 +26,9 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
+          window.localStorage.setItem('template_form', JSON.stringify(this.template_form));
           this.$Message.success('Success!');
+          this.$router.push('/preview');
         } else {
           this.$Message.error('Fail!');
         }
@@ -39,6 +41,9 @@ export default {
   },
   created() {
     this.template_form = JSON.parse(localStorage.getItem('template_form') || '[]');
+    for (let i in this.template_form) {
+      this.$set(this.formData, this.template_form[i].obj.name, this.template_form[i].obj.value);
+    }
   }
 }
 
