@@ -72,6 +72,9 @@
             <InputNumber :formatter="value => `${value}px`" :parser="value => value.replace('px', '')" v-model="modalFormData.marginBottom" placeholder="请输入标签下边距">
             </InputNumber>
           </FormItem>
+          <FormItem label="详细地址：" v-if="typeof modalFormData.details_address != 'undefined'">
+            <Checkbox v-model="modalFormData.details_address">是否需要详细地址</Checkbox>
+          </FormItem>
           <FormItem label="是否必填：" v-if="typeof modalFormData.require != 'undefined'">
             <Checkbox v-model="modalFormData.require">必填</Checkbox>
           </FormItem>
@@ -80,6 +83,12 @@
           </FormItem>
           <FormItem label="是否多选：" v-if="typeof modalFormData.multiple != 'undefined' && modalFormData.type != 'address'">
             <Checkbox v-model="modalFormData.multiple">多选</Checkbox>
+          </FormItem>
+          <FormItem label="时间格式：" v-if="typeof modalFormData.format != 'undefined'">
+            <RadioGroup v-model="modalFormData.format">
+              <Radio label="yyyy年MM月dd日"></Radio>
+              <Radio label="yyyy-MM-dd HH:mm"></Radio>
+            </RadioGroup>
           </FormItem>
           <FormItem label="行内元素：" v-if="typeof modalFormData.inlineBlock != 'undefined'">
             <Checkbox v-model="modalFormData.inlineBlock">是</Checkbox>

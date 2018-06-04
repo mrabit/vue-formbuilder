@@ -34,7 +34,13 @@ const displayControl = (_self, sortableItem, name, value) => {
   let display = false;
   for (let i in sortableItem) {
     // 循环出sortableItem内被关联字段并且其状态为显示并且其值与用户预设被关联字段值匹配
-    if (sortableItem[i].obj.name == name && sortableItem[i].obj.visibility && sortableItem[i].obj.value == value) {
+    // 不匹配,进行下一次判断
+    if (sortableItem[i].obj.name != name || !sortableItem[i].obj.visibility) {
+      continue;
+    }
+    // checkbox的value为数组, 判断是否存在  非数组直接比对字符串
+    if ((Array.isArray(sortableItem[i].obj.value) && sortableItem[i].obj.value.indexOf(value) >= 0) ||
+      sortableItem[i].obj.value == value) {
       display = true;
       // name唯一,已匹配则不必循环之后数据
       break;

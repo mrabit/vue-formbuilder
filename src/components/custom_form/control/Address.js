@@ -1,16 +1,21 @@
 import area from '../config/area'
 export default (_self, h) => {
-  return [
-    h('cascaderMulti', {
+  let control = [
+    h('Cascader', {
+      class: {
+        'ivu-input-wrapper ': !_self.obj.details_address
+      },
       style: {
-        width: '200px',
+        width: _self.obj.details_address ? '200px' : '100%',
         display: 'inline-block'
       },
       props: {
-        placeholder: _self.obj.placeholder || "请选择详细地址",
+        placeholder: _self.obj.placeholder || (_self.obj.name ? "" : "请选择详细地址"),
         data: area,
         value: _self.obj.value || [],
-        filterable: false
+        filterable: false,
+        'change-on-select': true,
+        // trigger: "hover"
       },
       on: {
         "on-change" (arr) {
@@ -31,7 +36,7 @@ export default (_self, h) => {
       },
       style: {
         width: 'auto',
-        display: _self.obj.value.length <= 0 ? 'none' : 'inline-block',
+        display: !_self.obj.name ? 'none' : 'inline-block',
         'margin-left': '5px',
         'min-width': '300px'
       },
@@ -46,7 +51,12 @@ export default (_self, h) => {
         }
       }
     })
-  ]
+  ];
+
+  if (!_self.obj.details_address) {
+    control.splice(1, 1);
+  }
+  return control;
 }
 export let addressConf = {
   // 对应数据库内类型
@@ -75,5 +85,7 @@ export let addressConf = {
   // 关联字段value
   relation_value: '',
   // 是否被渲染
-  visibility: true
+  visibility: true,
+  // 是否需要详细地址
+  details_address: true
 }

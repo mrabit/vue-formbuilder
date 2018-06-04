@@ -3,11 +3,10 @@ export default (_self, h) => {
   return [
     h('DatePicker', {
       props: {
-        placeholder: _self.obj.placeholder || "请选择日期",
-        type: 'date',
-        format: 'yyyy年MM月dd日',
-        value: _self.obj.value || moment()
-          .format('YYYY-MM-DD')
+        placeholder: _self.obj.placeholder || (_self.obj.name ? "" : "请选择日期"),
+        type: (!_self.obj.format || _self.obj.format == 'yyyy年MM月dd日') ? 'date' : 'datetime',
+        format: _self.obj.format || 'yyyy年MM月dd日',
+        value: _self.obj.value
       },
       on: {
         "on-change" (arr) {
@@ -38,8 +37,7 @@ export let datePickerConf = {
   // 表单name
   name: '',
   // 绑定的值
-  value: moment()
-    .format('YYYY-MM-DD'),
+  value: "",
   // 验证错误提示信息
   ruleError: '选项不能为空',
   // 是否关联字段
@@ -49,5 +47,7 @@ export let datePickerConf = {
   // 关联字段value
   relation_value: '',
   // 是否被渲染
-  visibility: true
+  visibility: true,
+  // 是否需要时分
+  format: 'yyyy年MM月dd日'
 }

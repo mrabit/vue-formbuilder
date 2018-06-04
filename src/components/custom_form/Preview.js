@@ -13,7 +13,7 @@ const form_item = {
 // 获取地区控件值
 function getAddressValue(address, area, code = 0, str = "") {
   // 最后一步
-  if (code == address.length - 1) return str + address[code];
+  if (code == address.length - 1 && code == 3) return str + address[code];
   for (let i in area) {
     if (area[i].value == address[code]) {
       str = str + getAddressValue(address, area[i].children, code + 1, area[i].label);
@@ -21,6 +21,29 @@ function getAddressValue(address, area, code = 0, str = "") {
     }
   }
   return str;
+}
+
+function getCascaderValue(address, area, code = 0, str = "") {
+  // 最后一步
+  for (let i in area) {
+    if (area[i].value == address[code]) {
+      str = (str ? str + " > " : "") + getCascaderValue(address, area[i].children, code + 1, area[i].label);
+      break;
+    }
+  }
+  return str;
+}
+
+function getSelectValue(value, items) {
+  return items.filter(v => {
+    return v.label_value == value;
+  })
+}
+
+function getCheckBoxValue(value, items) {
+  return items.filter(v => {
+    return value.indexOf(v.label_value) >= 0;
+  })
 }
 
 // 获取控件值
@@ -37,24 +60,58 @@ const getObjValue = (ele, obj) => {
     return getAddressValue(obj.value, area);
   }
 
+  if (ele === "cascader") {
+    return getCascaderValue(obj.value, obj.items);
+  }
+
   const items = obj.items;
   const value = obj.value;
+  if (ele == "select" || ele == "radio") {
+    return (getSelectValue(value, items)[0] || {})
+      .label_name;;
+  }
 
-  return items.filter(k => {
-    return k.label_value == value;
-  })[0].label_name;
+  if (ele == "checkbox") {
+    let str = "";
+    getCheckBoxValue(value, items)
+      .forEach(v => {
+        str += (v.label_name + ",");
+      })
+    return str.substring(0, str.length - 1);
+  }
+
+  return (items[value] || {})
+    .label_name || "";
 }
 
 export default {
   name: 'preview',
   render(h) {
+    // 关联的组件判断是否展示
+    if (!this.obj.visibility) {
+      return h('span');
+    }
     // 非 Title Hr P 
-    if (['title', 'hr', 'p'].indexOf((this.ele.toLowerCase())) < 0) {
-      // 关联的组件判断是否展示
-      if (!this.obj.visibility) {
-        return h('span');
+    if (['title', 'hr', 'p'].indexOf(this.ele.toLowerCase()) < 0) {
+      let control;
+      if (this.ele.toLowerCase() != "uploads") {
+        control = h('span', getObjValue(this.ele.toLowerCase(), this.obj));
+      } else {
+        control = h('ul', { class: { 'pull-left': true }, style: { 'list-style': 'none' } },
+          this.obj.value.map(v => {
+            return h('li', [h('a', {
+              attrs: {
+                target: '_blank',
+                href: v.url
+              }
+            }, v.file_name)]);
+          })
+        )
       }
-      return h('p', {
+      return h('div', {
+        class: {
+          'clearfix': true
+        },
         style: {
           // 是否显示行内元素
           display: this.obj.inlineBlock ? 'inline-block' : 'block',
@@ -63,8 +120,8 @@ export default {
           'margin-bottom': '24px'
         }
       }, [
-        h('label', { style: { 'width': '100px' }, class: { 'text-right': true } }, this.obj.label + "："),
-        h('span', getObjValue(this.ele.toLowerCase(), this.obj)),
+        h('label', { class: { 'text-right': true, 'pull-left': this.ele.toLowerCase() == "uploads" } }, this.obj.label + "："),
+        control,
       ])
     } else {
       // 获取当前控件渲染
@@ -85,5 +142,9 @@ export default {
         return {};
       }
     },
+    labelWidth: {
+      type: Number,
+      default: 100
+    }
   }
 }

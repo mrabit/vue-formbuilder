@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "cascader-multi": "^1.5.0",
+    "cascader-multi": "^1.5.5",
     "iview": "^2.12.0",
     "iview-area": "^1.5.17",
     "moment": "^2.22.0",
