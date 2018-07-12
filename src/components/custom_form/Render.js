@@ -87,7 +87,7 @@ export default {
             trigger: trigger[this.obj.type],
             validator: (rule, value, callback) => {
               // 没有配置按钮并且允许验证
-              if (!this.configIcon && validate && !value) {
+              if (!this.configIcon && validate && (Array.isArray(value) ? !value.length : !value)) {
                 callback(new Error('该项为必填项'));
               } else {
                 callback();

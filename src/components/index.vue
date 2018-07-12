@@ -20,8 +20,8 @@
             </transition-group>
           </draggable>
           <FormItem>
-            <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
-            <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>
+            <Button type="primary" @click="handleSubmit()">Submit</Button>
+            <Button type="ghost" @click="handleReset()" style="margin-left: 8px">Reset</Button>
           </FormItem>
         </Form>
       </i-col>
@@ -135,16 +135,7 @@ export default {
   },
   methods: {
     // 克隆表单提交事件
-    handleSubmit(name) {
-      // this.$refs[name].validate((valid) => {
-      //   if (valid) {
-      //     this.$Message.success('Success!');
-      //   } else {
-      //     debugger;
-      //     this.$Message.error('Fail!');
-      //   }
-      // })
-
+    handleSubmit() {
       localStorage.setItem('template_form', JSON.stringify(this.sortable_item.filter(v => {
         return !!v.obj.name
       })));
@@ -311,7 +302,6 @@ export default {
     this.sortable_item = JSON.parse(localStorage.getItem('template_form') || '[]');
   }
 };
-
 </script>
 <style>
 .inline {
@@ -411,5 +401,4 @@ export default {
   font-size: 12px;
   color: #ed3f14;
 }
-
 </style>
