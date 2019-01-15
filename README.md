@@ -4,6 +4,8 @@
 
 > 项目 UI 组件库为 [iView](https://www.iviewui.com/docs/guide/install), [Element UI](http://element-cn.eleme.io/#/zh-CN) 可根据项目内代码进行适当修改达到适用
 
+> Element版本Demo: [https://yunpan.360.cn/surl_ymAY4CPrMNx](https://yunpan.360.cn/surl_ymAY4CPrMNx) （提取码：0e00）
+
 ## 效果预览
 
 ![image](https://ws2.sinaimg.cn/large/8fa21aabgy1ft4umsceqkg212n0ae4ik.gif)
